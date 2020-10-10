@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePolyclinicsTables extends Migration
+class CreateWaitingLists extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreatePolyclinicsTables extends Migration
      */
     public function up()
     {
-        Schema::create('polyclinics_tables', function (Blueprint $table) {
+        Schema::create('waiting_lists', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });
@@ -26,6 +26,6 @@ class CreatePolyclinicsTables extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('polyclinics_tables');
+        Schema::dropIfExists('waiting_lists');
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMasterPoliTables extends Migration
+class CreatePolyclinics extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateMasterPoliTables extends Migration
      */
     public function up()
     {
-        Schema::create('master_poli_tables', function (Blueprint $table) {
+        Schema::create('polyclinics', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });
@@ -26,6 +26,6 @@ class CreateMasterPoliTables extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('master_poli_tables');
+        Schema::dropIfExists('polyclinics');
     }
 }

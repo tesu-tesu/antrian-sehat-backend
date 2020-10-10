@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateHealthAgenciesTables extends Migration
+class CreatePolyMaster extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateHealthAgenciesTables extends Migration
      */
     public function up()
     {
-        Schema::create('health_agencies_tables', function (Blueprint $table) {
+        Schema::create('poly_master', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });
@@ -26,6 +26,6 @@ class CreateHealthAgenciesTables extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('health_agencies_tables');
+        Schema::dropIfExists('poly_master');
     }
 }

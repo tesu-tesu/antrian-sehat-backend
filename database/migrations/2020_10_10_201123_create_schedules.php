@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateWaitingListsTables extends Migration
+class CreateSchedules extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateWaitingListsTables extends Migration
      */
     public function up()
     {
-        Schema::create('waiting_lists_tables', function (Blueprint $table) {
+        Schema::create('schedules', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });
@@ -26,6 +26,6 @@ class CreateWaitingListsTables extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('waiting_lists_tables');
+        Schema::dropIfExists('schedules');
     }
 }
