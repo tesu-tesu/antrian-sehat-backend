@@ -13,7 +13,7 @@ class CreatePolyMaster extends Migration
      */
     public function up()
     {
-        Schema::create('poly_master', function (Blueprint $table) {
+        Schema::create('poly_masters', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });
