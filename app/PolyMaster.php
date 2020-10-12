@@ -4,10 +4,10 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class HealthAgency extends Model
+class PolyMaster extends Model
 {
     protected $fillable = [
-        'name', 'address', 'image', 'call_center', 'email',
+        'name',
     ];
 
     public function polyclinics() {
