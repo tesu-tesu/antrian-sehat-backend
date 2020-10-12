@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'phone', 'residence_number', 'profile_img', 'health_agency_id', 'role',
     ];
 
     /**
@@ -33,7 +33,11 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    // protected $casts = [
+    //     'email_verified_at' => 'datetime',
+    // ];
+
+    public function health_agency() {
+        return $this->belongsTo('App\HealthAgency');
+    }
 }
