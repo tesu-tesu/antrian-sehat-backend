@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateHealthAgencies extends Migration
+class CreatePolyclinics extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,14 @@ class CreateHealthAgencies extends Migration
      */
     public function up()
     {
-        Schema::create('health_agencies', function (Blueprint $table) {
+        Schema::create('polyclinics', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('poly_master_id')
+                ->constrained()
+                ->onDelete('cascade');
+            $table->foreignId('health_agency_id')
+                ->constrained()
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -26,6 +32,6 @@ class CreateHealthAgencies extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('health_agencies');
+        Schema::dropIfExists('polyclinics');
     }
 }

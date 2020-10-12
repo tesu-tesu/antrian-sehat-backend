@@ -15,6 +15,12 @@ class CreateSchedules extends Migration
     {
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('polyclinic_id')
+                ->constrained()
+                ->onDelete('cascade');
+            $table->enum('day', DAY);
+            $table->string('time_open');
+            $table->string('time_close')->nullable();
             $table->timestamps();
         });
     }

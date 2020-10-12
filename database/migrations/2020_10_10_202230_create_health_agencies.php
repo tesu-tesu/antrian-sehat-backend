@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePolyclinics extends Migration
+class CreateHealthAgencies extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,13 @@ class CreatePolyclinics extends Migration
      */
     public function up()
     {
-        Schema::create('polyclinics', function (Blueprint $table) {
+        Schema::create('health_agencies', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('address');
+            $table->string('image')->nullable();
+            $table->string('call_center')->nullable();
+            $table->string('email')->unique();
             $table->timestamps();
         });
     }
@@ -26,6 +31,6 @@ class CreatePolyclinics extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('polyclinics');
+        Schema::dropIfExists('health_agencies');
     }
 }

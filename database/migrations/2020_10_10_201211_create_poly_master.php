@@ -15,6 +15,7 @@ class CreatePolyMaster extends Migration
     {
         Schema::create('poly_masters', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
             $table->timestamps();
         });
     }

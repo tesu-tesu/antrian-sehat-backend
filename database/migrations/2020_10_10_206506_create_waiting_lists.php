@@ -15,6 +15,17 @@ class CreateWaitingLists extends Migration
     {
         Schema::create('waiting_lists', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')
+                ->constrained()
+                ->onDelete('cascade');
+            $table->foreignId('schedule_id')
+                ->constrained()
+                ->onDelete('cascade');
+            $table->string('barcode')->unique();
+            $table->date('registered_date');
+            $table->string('order_number');
+            $table->string('residence_number');
+            $table->enum('status', PATIENT_STATUS);
             $table->timestamps();
         });
     }
