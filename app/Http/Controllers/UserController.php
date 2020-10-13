@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Rules\MatchOldPassword;
 
 class UserController extends Controller
 {
     public function __construct() {
-//        $this->middleware('api');
+       $this->middleware('api');
     }
     /**
      * Display a listing of the resource.
@@ -144,6 +145,43 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'User data can not be updated'
+            ], 500);
+    }
+
+    public function changePassword(Request $request, User $user)
+    {
+        $data = User::find($user->id);
+
+        if (!$data) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User data not found'
+            ], 400);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'current' => ['required', new MatchOldPassword()],
+            'new' => ['required', 'string', 'max:255'],
+            'confirm' => ['same:new'],
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+        $updated = User::where('id', $user->id)
+            ->update([
+                'password' => bcrypt($request->new)
+            ]);
+
+        if ($updated)
+            return response()->json([
+                'success' => true,
+                'message' => 'Password data updated successfully!'
+            ], 200);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => 'Password data can not be updated'
             ], 500);
     }
 
