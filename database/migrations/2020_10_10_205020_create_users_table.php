@@ -19,12 +19,11 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('phone');
-            $table->integer('residence_number')->unique()->nullable();
+            $table->string('residence_number', 16)->unique()->nullable();
             $table->string('profile_img')->nullable();
             $table->foreignId('health_agency_id')
                 ->nullable()
-                ->constrained()
-                ->onDelete('cascade');
+                ->constrained();
             $table->enum('role', ROLE);
             $table->rememberToken();
             $table->timestamps();

@@ -20,6 +20,8 @@ Route::group(['middleware' => ['auth:api']], function () {
     });
 
     Route::resource('user', 'UserController');
+    Route::post('change-password/{user}', 'UserController@changePassword')
+    ->name('user.change-password');
 });
 
 Route::group(['prefix'=>'auth','as'=>'auth.'], function (){
