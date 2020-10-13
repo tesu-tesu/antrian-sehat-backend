@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\User;
+use App\HealthAgency;
 use Illuminate\Http\Request;
 
-class UserController extends Controller
+class HealthAgencyController extends Controller
 {
-    public function __construct() {
-//        $this->middleware('api');
-    }
     /**
      * Display a listing of the resource.
      *
@@ -17,7 +14,7 @@ class UserController extends Controller
      */
     public function index()
     {
-      
+        //
     }
 
     /**
@@ -38,25 +35,27 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-
+        //
     }
 
     /**
      * Display the specified resource.
      *
+     * @param  \App\HealthAgency  $healthAgency
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show(HealthAgency $healthAgency)
     {
-
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
+     * @param  \App\HealthAgency  $healthAgency
      * @return \Illuminate\Http\Response
      */
-    public function edit(User $user)
+    public function edit(HealthAgency $healthAgency)
     {
         //
     }
@@ -65,9 +64,10 @@ class UserController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
+     * @param  \App\HealthAgency  $healthAgency
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, HealthAgency $healthAgency)
     {
         //
     }
@@ -75,9 +75,10 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
+     * @param  \App\HealthAgency  $healthAgency
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy(HealthAgency $healthAgency)
     {
         //
     }
