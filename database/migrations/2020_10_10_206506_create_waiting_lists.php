@@ -24,7 +24,7 @@ class CreateWaitingLists extends Migration
             $table->string('barcode')->unique();
             $table->date('registered_date');
             $table->string('order_number');
-            $table->string('residence_number');
+            $table->string('residence_number', 16);
             $table->enum('status', PATIENT_STATUS);
             $table->timestamps();
         });
