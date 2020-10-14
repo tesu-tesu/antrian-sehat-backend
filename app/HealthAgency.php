@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class HealthAgency extends Model
 {
+    protected $table = 'health_agencies';
     protected $fillable = [
         'name', 'address', 'image', 'call_center', 'email',
     ];
