@@ -9,9 +9,9 @@ use App\Rules\MatchOldPassword;
 
 class UserController extends Controller
 {
-    public function __construct() {
-       $this->middleware('api');
-    }
+//    public function __construct() {
+//       $this->middleware('api');
+//    }
     /**
      * Display a listing of the resource.
      *
@@ -19,7 +19,7 @@ class UserController extends Controller
      */
     public function index()
     {
-      
+
     }
 
     /**
@@ -188,14 +188,14 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $data = User::find($user->id);
- 
+
         if (!$data) {
             return response()->json([
                 'success' => false,
                 'message' => 'User data not found'
             ], 400);
         }
- 
+
         if ($data->delete()) {
             return response()->json([
                 'success' => true,
