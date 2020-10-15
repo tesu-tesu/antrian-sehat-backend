@@ -159,7 +159,7 @@ class HealthAgencyController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \App\HealthAgency  $healthAgency
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(HealthAgency $healthAgency)
     {
