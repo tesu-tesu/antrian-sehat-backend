@@ -15,6 +15,8 @@ class PolyMasterController extends Controller
     public function index()
     {
         //
+        $polyMaster = PolyMaster::All();
+        return PolyMasterResource::collection($polyMaster);
     }
 
     /**

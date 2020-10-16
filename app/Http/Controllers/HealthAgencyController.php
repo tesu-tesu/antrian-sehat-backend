@@ -32,7 +32,7 @@ class HealthAgencyController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
@@ -82,7 +82,7 @@ class HealthAgencyController extends Controller
      * Display the specified resource.
      *
      * @param  \App\HealthAgency  $healthAgency
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(HealthAgency $healthAgency)
     {
@@ -105,7 +105,7 @@ class HealthAgencyController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\HealthAgency  $healthAgency
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, HealthAgency $healthAgency)
     {
