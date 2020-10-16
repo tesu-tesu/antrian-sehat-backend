@@ -6,6 +6,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Rules\MatchOldPassword;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -159,6 +160,39 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Password data can not be updated'
+            ], 500);
+    }
+
+    public function changeImage(Request $request, User $user)
+    {
+        $validator = Validator::make($request->all(), [
+            'image' => 'image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+        $uploadFile = $request->file('image');
+        if($uploadFile!=null){
+            \File::delete(storage_path('app/').$user->profile_img);
+            $path = $uploadFile->store('public/img/users');
+        } else {
+            $path = $user->image;
+        }
+        $updated = User::where('id', $user->id)
+            ->update([
+                'profile_img' => $path
+            ]);
+
+        if ($updated)
+            return response()->json([
+                'success' => true,
+                'message' => 'Profile image has updated successfully!'
+            ], 200);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => 'Profile image can not be updated'
             ], 500);
     }
 
