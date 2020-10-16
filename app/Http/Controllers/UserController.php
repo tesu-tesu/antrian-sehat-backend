@@ -77,7 +77,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-
+        return response()->json($user, 200);
     }
 
     /**
@@ -98,15 +98,6 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $data = User::find($user->id);
-
-        if (!$data) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User data not found'
-            ], 400);
-        }
-
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:3,150',
             'email' => 'required|string|email|unique:users,email,' .$user->id. '|max:100',
@@ -145,15 +136,6 @@ class UserController extends Controller
 
     public function changePassword(Request $request, User $user)
     {
-        $data = User::find($user->id);
-
-        if (!$data) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User data not found'
-            ], 400);
-        }
-
         $validator = Validator::make($request->all(), [
             'current' => ['required', new MatchOldPassword()],
             'new' => ['required', 'string', 'max:255'],
@@ -187,16 +169,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        $data = User::find($user->id);
-
-        if (!$data) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User data not found'
-            ], 400);
-        }
-
-        if ($data->delete()) {
+        if ($user->delete()) {
             return response()->json([
                 'success' => true,
                 'message' => 'User has successfully deleted'
