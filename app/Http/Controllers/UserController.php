@@ -169,7 +169,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        if ($data->delete()) {
+        if ($user->delete()) {
             return response()->json([
                 'success' => true,
                 'message' => 'User has successfully deleted'
