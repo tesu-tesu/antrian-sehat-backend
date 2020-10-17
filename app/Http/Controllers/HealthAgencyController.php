@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\HealthAgency;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
 class HealthAgencyController extends Controller
@@ -32,7 +34,7 @@ class HealthAgencyController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse|Response
      */
     public function store(Request $request)
     {
@@ -82,7 +84,7 @@ class HealthAgencyController extends Controller
      * Display the specified resource.
      *
      * @param  \App\HealthAgency  $healthAgency
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse|Response
      */
     public function show(HealthAgency $healthAgency)
     {
@@ -159,7 +161,7 @@ class HealthAgencyController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \App\HealthAgency  $healthAgency
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse|Response
      */
     public function destroy(HealthAgency $healthAgency)
     {
