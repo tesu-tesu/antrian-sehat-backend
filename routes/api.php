@@ -19,9 +19,11 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::post('refresh', 'AuthController@refresh')->name('refresh');
     });
 
-    Route::resource('user', 'UserController');
     Route::post('change-password/{user}', 'UserController@changePassword')
     ->name('user.change-password');
+    Route::post('change-image/{user}', 'UserController@changeImage')
+    ->name('user.change-image');
+    Route::resource('user', 'UserController');
 });
 
 Route::group(['prefix'=>'auth','as'=>'auth.'], function (){
@@ -29,11 +31,9 @@ Route::group(['prefix'=>'auth','as'=>'auth.'], function (){
     Route::post('login', 'AuthController@login')->name('login');
 });
 
-Route::group(['middleware' => ['auth:api'],  'prefix' => 'admin'], function (){
+Route::group(['middleware' => ['auth:api'], 'prefix' => 'admin'], function (){
    Route::resource('health-agency', 'HealthAgencyController');
+   Route::resource('poly-master', 'PolyMasterController');
+   Route::resource('schedule', 'ScheduleController');
    Route::resource('waiting-list', 'WaitingListController');
 });
-
-//Route::middleware('auth:api')->get('/user', function (Request $request) {
-//    return $request->user();
-//});

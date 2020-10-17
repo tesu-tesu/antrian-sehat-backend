@@ -6,6 +6,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Rules\MatchOldPassword;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -36,7 +37,7 @@ class UserController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
@@ -94,7 +95,7 @@ class UserController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, User $user)
     {
@@ -162,14 +163,47 @@ class UserController extends Controller
             ], 500);
     }
 
+    public function changeImage(Request $request, User $user)
+    {
+        $validator = Validator::make($request->all(), [
+            'image' => 'image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+        $uploadFile = $request->file('image');
+        if($uploadFile!=null){
+            \File::delete(storage_path('app/').$user->profile_img);
+            $path = $uploadFile->store('public/img/users');
+        } else {
+            $path = $user->image;
+        }
+        $updated = User::where('id', $user->id)
+            ->update([
+                'profile_img' => $path
+            ]);
+
+        if ($updated)
+            return response()->json([
+                'success' => true,
+                'message' => 'Profile image has updated successfully!'
+            ], 200);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => 'Profile image can not be updated'
+            ], 500);
+    }
+
     /**
      * Remove the specified resource from storage.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(User $user)
     {
-        if ($data->delete()) {
+        if ($user->delete()) {
             return response()->json([
                 'success' => true,
                 'message' => 'User has successfully deleted'
