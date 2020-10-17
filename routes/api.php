@@ -29,8 +29,9 @@ Route::group(['prefix'=>'auth','as'=>'auth.'], function (){
     Route::post('login', 'AuthController@login')->name('login');
 });
 
-Route::group(['middleware' => ['auth:api'], 'as' => 'health-agency.', 'prefix' => 'admin'], function (){
+Route::group(['middleware' => ['auth:api'],  'prefix' => 'admin'], function (){
    Route::resource('health-agency', 'HealthAgencyController');
+   Route::resource('waiting-list', 'WaitingListController');
 });
 
 //Route::middleware('auth:api')->get('/user', function (Request $request) {
