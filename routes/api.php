@@ -35,6 +35,9 @@ Route::group(['middleware' => ['auth:api'], 'as' => 'health-agency.', 'prefix' =
    Route::resource('health-agency', 'HealthAgencyController');
 });
 
+Route::group(['middleware' => ['auth:api'], 'as' => 'poly-master.', 'prefix' => 'admin'], function (){
+    Route::resource('poly-master', 'PolyMasterController');
+});
 //Route::middleware('auth:api')->get('/user', function (Request $request) {
 //    return $request->user();
 //});
