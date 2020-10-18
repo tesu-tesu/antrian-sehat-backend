@@ -35,6 +35,10 @@ Route::group(['prefix'=>'auth','as'=>'auth.'], function (){
 
 Route::group(['middleware' => ['auth:api'], 'prefix' => 'admin'], function (){
    Route::resource('health-agency', 'HealthAgencyController');
+   Route::group(['prefix' => 'health-agency', 'as' => 'health-agency.'], function (){
+       Route::get('{healthAgency}/polyclinic', 'HealthAgencyController@showPolyclinic')->name('show-polyclinic');
+   });
+
    Route::resource('poly-master', 'PolyMasterController');
    Route::resource('schedule', 'ScheduleController');
    Route::resource('polyclinic', 'PolyclinicController');
