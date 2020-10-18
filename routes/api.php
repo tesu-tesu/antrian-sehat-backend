@@ -35,5 +35,6 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'admin'], function (){
    Route::resource('health-agency', 'HealthAgencyController');
    Route::resource('poly-master', 'PolyMasterController');
    Route::resource('schedule', 'ScheduleController');
+   Route::resource('polyclinic', 'PolyclinicController');
    Route::resource('waiting-list', 'WaitingListController');
 });
