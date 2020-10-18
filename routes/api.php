@@ -37,6 +37,7 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'admin'], function (){
    Route::resource('health-agency', 'HealthAgencyController');
    Route::group(['prefix' => 'health-agency', 'as' => 'health-agency.'], function (){
        Route::get('{healthAgency}/polyclinic', 'HealthAgencyController@showPolyclinic')->name('show-polyclinic');
+       Route::get('show/waiting-list', 'HealthAgencyController@showWaitingList')->name('show-waiting-list');
    });
 
    Route::resource('poly-master', 'PolyMasterController');
