@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\HealthAgency;
+use App\Polyclinic;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -178,5 +179,12 @@ class HealthAgencyController extends Controller
                 'message' => 'Delete data failed!',
             ], 500);
         }
+    }
+
+    public function showPolyclinic(HealthAgency $healthAgency){
+        $schedule = HealthAgency::where('id', $healthAgency->id)
+            ->with('polyclinics', 'polyclinics.schedules', 'polyclinics.poly_master')->get();
+
+        return response()->json($schedule, 200);
     }
 }
