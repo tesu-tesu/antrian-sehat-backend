@@ -166,7 +166,7 @@ class UserController extends Controller
     public function changeImage(Request $request, User $user)
     {
         $validator = Validator::make($request->all(), [
-            'image' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'image' => 'image|mimes:jpeg,png,jpg|max:2000',
         ]);
         if($validator->fails()){
             return response()->json($validator->errors()->toJson(), 400);

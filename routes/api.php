@@ -19,10 +19,12 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::post('refresh', 'AuthController@refresh')->name('refresh');
     });
 
-    Route::post('change-password/{user}', 'UserController@changePassword')
-    ->name('user.change-password');
-    Route::post('change-image/{user}', 'UserController@changeImage')
-    ->name('user.change-image');
+    Route::group(['prefix'=>'user'], function (){
+        Route::post('change-password/{user}', 'UserController@changePassword')
+        ->name('user.change-password');
+        Route::post('change-image/{user}', 'UserController@changeImage')
+        ->name('user.change-image');
+    });
     Route::resource('user', 'UserController');
 });
 
