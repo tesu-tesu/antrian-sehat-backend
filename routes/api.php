@@ -33,14 +33,8 @@ Route::group(['prefix'=>'auth','as'=>'auth.'], function (){
 
 Route::group(['middleware' => ['auth:api'], 'prefix' => 'admin'], function (){
    Route::resource('health-agency', 'HealthAgencyController');
+   Route::resource('poly-master', 'PolyMasterController');
    Route::resource('schedule', 'ScheduleController');
    Route::resource('polyclinic', 'PolyclinicController');
+   Route::resource('waiting-list', 'WaitingListController');
 });
-
-Route::group(['middleware' => ['auth:api'], 'as' => 'poly-master.', 'prefix' => 'admin'], function (){
-    Route::resource('poly-master', 'PolyMasterController');
-});
-
-//Route::middleware('auth:api')->get('/user', function (Request $request) {
-//    return $request->user();
-//});

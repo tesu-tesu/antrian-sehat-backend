@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
 use App\WaitingList;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class WaitingListController extends Controller
 {
@@ -35,7 +37,60 @@ class WaitingListController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'schedule' => 'required|numeric',
+            'registered_date' => 'required|date',
+            'residence_number' => 'required|numeric|digits:16',
+        ]);
+
+        if($validator->fails()){
+            return response()->json($validator->errors(), 400);
+        }
+
+        $ordered = WaitingList::select('id')
+                            ->where('residence_number', $request->residence_number)
+                            ->where('schedule_id', $request->schedule)
+                            ->where('registered_date', $request->registered_date)
+                            ->first();
+        
+        if($ordered != null)
+            return response()->json($validator->errors(), 400);
+
+        $latestOrder = WaitingList::select('order_number')
+                            ->where('registered_date', $request->registered_date)
+                            ->where('schedule_id', $request->schedule)
+                            ->latest()->first();
+        if($latestOrder == null) {
+            $latestOrder = new WaitingList();
+        }
+        $latestOrder->order_number++;
+        
+        $waitingListId = WaitingList::create([
+            'user_id' => Auth::id(),
+            'schedule_id' => $request->schedule,
+            'registered_date' => $request->registered_date,
+            'order_number' => $latestOrder->order_number,
+            'residence_number' => $request->residence_number,
+            'status' => 'Belum Diperiksa',
+        ])->id;
+
+        $waitingList = WaitingList::where('id', $waitingListId)
+                            ->update([
+                                'barcode' => $waitingListId . '_' . $request->residence_number,
+                            ]);
+
+        if($waitingList)
+            return response()->json([
+                'success' => true,
+                'message' => 'Add data successfully!',
+                'waiting_list' => $waitingList,
+            ], 200);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => 'Add data failed!',
+                'waiting_list' => $waitingList,
+            ], 500);
     }
 
     /**
@@ -46,7 +101,18 @@ class WaitingListController extends Controller
      */
     public function show(WaitingList $waitingList)
     {
-        //
+        $result = WaitingList::where('id', $waitingList->id);
+
+        if($result)
+            return response()->json([
+                'success' => true,
+                'waiting_list' => $result,
+            ], 200);
+        else
+            return response()->json([
+                'success' => false,
+                'waiting_list' => $result,
+            ], 500);
     }
 
     /**
@@ -69,7 +135,31 @@ class WaitingListController extends Controller
      */
     public function update(Request $request, WaitingList $waitingList)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'status' => 'required|string',
+        ]);
+
+        if($validator->fails()){
+            return response()->json($validator->errors(), 400);
+        }
+
+        $updated = WaitingList::where('id', $waitingList->id)
+                            ->update([
+                                'status' => $request->status,
+                            ]);
+
+        if($updated)
+            return response()->json([
+                'success' => true,
+                'message' => 'Waiting list\'s status has been successfully updated!',
+                'waiting_list' => $updated,
+            ], 200);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update waiting list\'s status',
+                'waiting_list' => $updated,
+            ], 500);
     }
 
     /**
@@ -80,6 +170,16 @@ class WaitingListController extends Controller
      */
     public function destroy(WaitingList $waitingList)
     {
-        //
+        if ($waitingList->delete()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Waiting list has successfully deleted'
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Waiting list can not be deleted'
+            ], 500);
+        }
     }
 }
