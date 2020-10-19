@@ -196,10 +196,11 @@ class HealthAgencyController extends Controller
         return response()->json($results, 200);
     }
 
-    public function adminShowPolyWithSchedule(HealthAgency $healthAgency){
-        $schedule = HealthAgency::select('id', 'name')
-            ->where('id', $healthAgency->id)
-            ->with('polyclinics', 'polyclinics.schedules', 'polyclinics.poly_master:id,name')->get();
+    public function adminShowPolyclinic(HealthAgency $healthAgency){
+        $schedule = Polyclinic::with(['poly_master' => function($q){
+                $q->select('id', 'name')->get();
+            },'schedules'])
+            ->where('health_agency_id', $healthAgency->id)->get();
 
         return response()->json($schedule, 200);
     }

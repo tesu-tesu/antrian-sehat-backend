@@ -40,8 +40,8 @@ Route::group(['prefix'=>'auth','as'=>'auth.'], function (){
 
 Route::group(['middleware' => ['auth:api'], 'prefix' => 'admin'], function (){
    Route::group(['prefix' => 'health-agency', 'as' => 'health-agency.'], function (){
-        Route::get('{healthAgency}/polyclinic', 'HealthAgencyController@adminShowPolyWithSchedule')
-            ->name('show-poly-with-schedule');
+        Route::get('{healthAgency}/polyclinic', 'HealthAgencyController@adminShowPolyclinic')
+            ->name('show-polyclinic');
         Route::get('waiting-list', 'HealthAgencyController@showWaitingList')
             ->name('show-waiting-list');
    });
