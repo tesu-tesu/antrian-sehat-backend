@@ -184,7 +184,7 @@ class HealthAgencyController extends Controller
         }
     }
 
-    public function showPolyclinic(HealthAgency $healthAgency){
+    public function userShowPolymaster(HealthAgency $healthAgency){
         $puskesmas = HealthAgency::where('id', $healthAgency->id)
             ->with('polyclinics', 'polyclinics.poly_master')->get();
 
