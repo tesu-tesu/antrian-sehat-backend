@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Polyclinic;
 use App\PolyMaster;
-use App\HealthAgency;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -149,15 +148,13 @@ class PolyclinicController extends Controller
         }
     }
 
-    public function showHealthAgency(PolyMaster $polymaster){
-        $puskesmas = HealthAgency::where('id', $healthAgency->id)
-            ->with('polyclinics', 'polyclinics.poly_master')->get();
+    public function userShowHealthAgency(PolyMaster $polymaster){
+        $data = Polyclinic::where('poly_master_id', $polymaster->id)
+            ->with('health_agency')->get();
 
         $results = [];
-        foreach ($puskesmas as $row) {
-            foreach ($row->polyclinics as $polyclinic) {
-                $results[] = $polyclinic->poly_master;
-            }
+        foreach ($data as $row) {
+            $results[] = $row->health_agency;
         }
 
         return response()->json($results, 200);
