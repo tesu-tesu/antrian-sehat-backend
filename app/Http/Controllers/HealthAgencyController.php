@@ -185,10 +185,17 @@ class HealthAgencyController extends Controller
     }
 
     public function showPolyclinic(HealthAgency $healthAgency){
-        $schedule = HealthAgency::where('id', $healthAgency->id)
-            ->with('polyclinics', 'polyclinics.schedules', 'polyclinics.poly_master')->get();
+        $puskesmas = HealthAgency::where('id', $healthAgency->id)
+            ->with('polyclinics', 'polyclinics.poly_master')->get();
 
-        return response()->json($schedule, 200);
+        $results = [];
+        foreach ($puskesmas as $row) {
+            foreach ($row->polyclinics as $polyclinic) {
+                $results[] = $polyclinic->poly_master;
+            }
+        }
+
+        return response()->json($results, 200);
     }
 
     public function showWaitingList(){
