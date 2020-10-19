@@ -30,6 +30,9 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('user.show-polymaster')->middleware('isPasien');
         Route::get('health-agency/{polymaster}/', 'PolyclinicController@userShowHealthAgency')
             ->name('user.show-health-agency')->middleware('isPasien');
+
+        Route::post('search/', 'HealthAgencyController@searchHealthAgency')
+            ->name('user.search-health-agency')->middleware('isPasien');
     });
 });
 
