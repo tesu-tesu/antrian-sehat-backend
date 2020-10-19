@@ -22,12 +22,14 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::resource('user', 'UserController');
     Route::group(['prefix'=>'user'], function (){
         Route::post('change-password/{user}', 'UserController@changePassword')
-        ->name('user.change-password');
+            ->name('user.change-password');
         Route::post('change-image/{user}', 'UserController@changeImage')
-        ->name('user.change-image');
+            ->name('user.change-image');
 
         Route::get('polymaster/{healthAgency}/', 'HealthAgencyController@userShowPolymaster')
-        ->name('user.show-polymaster')->middleware('isPasien');
+            ->name('user.show-polymaster')->middleware('isPasien');
+        Route::get('health-agency/{polymaster}/', 'PolyclinicController@userShowHealthAgency')
+            ->name('user.show-health-agency')->middleware('isPasien');
     });
 });
 

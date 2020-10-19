@@ -185,14 +185,12 @@ class HealthAgencyController extends Controller
     }
 
     public function userShowPolymaster(HealthAgency $healthAgency){
-        $puskesmas = HealthAgency::where('id', $healthAgency->id)
-            ->with('polyclinics', 'polyclinics.poly_master')->get();
+        $puskesmas = Polyclinic::where('health_agency_id', $healthAgency->id)
+            ->with('poly_master')->get();
 
         $results = [];
         foreach ($puskesmas as $row) {
-            foreach ($row->polyclinics as $polyclinic) {
-                $results[] = $polyclinic->poly_master;
-            }
+            $results[] = $row->poly_master;
         }
 
         return response()->json($results, 200);
