@@ -21,11 +21,11 @@ Route::group(['middleware' => ['auth:api']], function () {
 
     Route::group(['prefix'=>'user'], function (){
         Route::post('change-password/{user}', 'UserController@changePassword')
-        ->name('user.change-password');
+        ->name('user.change-password')->middleware('isPasien');
         Route::post('change-image/{user}', 'UserController@changeImage')
-        ->name('user.change-image');
+        ->name('user.change-image')->middleware('isPasien');
     });
-    Route::resource('user', 'UserController');
+    Route::resource('user', 'UserController')->middleware('isAdmin');
 });
 
 Route::group(['prefix'=>'auth','as'=>'auth.'], function (){
@@ -34,14 +34,14 @@ Route::group(['prefix'=>'auth','as'=>'auth.'], function (){
 });
 
 Route::group(['middleware' => ['auth:api'], 'prefix' => 'admin'], function (){
-   Route::resource('health-agency', 'HealthAgencyController');
+   Route::resource('health-agency', 'HealthAgencyController')->middleware('isAdmin');
    Route::group(['prefix' => 'health-agency', 'as' => 'health-agency.'], function (){
        Route::get('{healthAgency}/polyclinic', 'HealthAgencyController@showPolyclinic')->name('show-polyclinic');
        Route::get('show/waiting-list', 'HealthAgencyController@showWaitingList')->name('show-waiting-list');
    });
 
-   Route::resource('poly-master', 'PolyMasterController');
-   Route::resource('schedule', 'ScheduleController');
-   Route::resource('polyclinic', 'PolyclinicController');
-   Route::resource('waiting-list', 'WaitingListController');
+   Route::resource('poly-master', 'PolyMasterController')->middleware('isAdmin');
+   Route::resource('schedule', 'ScheduleController')->middleware('isAdmin');
+   Route::resource('polyclinic', 'PolyclinicController')->middleware('isAdmin');
+   Route::resource('waiting-list', 'WaitingListController')->middleware('isAdmin');
 });
