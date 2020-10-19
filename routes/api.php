@@ -39,11 +39,13 @@ Route::group(['prefix'=>'auth','as'=>'auth.'], function (){
 });
 
 Route::group(['middleware' => ['auth:api'], 'prefix' => 'admin'], function (){
-   Route::resource('health-agency', 'HealthAgencyController')->middleware('isAdmin');
    Route::group(['prefix' => 'health-agency', 'as' => 'health-agency.'], function (){
-        Route::get('{healthAgency}/polyclinic', 'HealthAgencyController@showPolyclinic')->name('show-polyclinic');
-        Route::get('show/waiting-list', 'HealthAgencyController@showWaitingList')->name('show-waiting-list');
+        Route::get('{healthAgency}/polyclinic', 'HealthAgencyController@adminShowPolyWithSchedule')
+            ->name('show-poly-with-schedule');
+        Route::get('waiting-list', 'HealthAgencyController@showWaitingList')
+            ->name('show-waiting-list');
    });
+    Route::resource('health-agency', 'HealthAgencyController')->middleware('isAdmin');
 
    Route::resource('poly-master', 'PolyMasterController')->middleware(['isAdmin', 'isSuperAdmin']);
    Route::resource('schedule', 'ScheduleController')->middleware('isAdmin');

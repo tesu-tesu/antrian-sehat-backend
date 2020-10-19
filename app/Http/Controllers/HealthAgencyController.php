@@ -196,6 +196,14 @@ class HealthAgencyController extends Controller
         return response()->json($results, 200);
     }
 
+    public function adminShowPolyWithSchedule(HealthAgency $healthAgency){
+        $schedule = HealthAgency::select('id', 'name')
+            ->where('id', $healthAgency->id)
+            ->with('polyclinics', 'polyclinics.schedules', 'polyclinics.poly_master:id,name')->get();
+
+        return response()->json($schedule, 200);
+    }
+
     public function showWaitingList(){
         $waiting_list = DB::table('waiting_lists as wa')
             ->join('users as us', 'wa.user_id', '=', 'us.id')
