@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Polyclinic;
+use App\PolyMaster;
+use App\HealthAgency;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -145,5 +147,19 @@ class PolyclinicController extends Controller
                 'message' => 'Delete data failed!',
             ], 500);
         }
+    }
+
+    public function showHealthAgency(PolyMaster $polymaster){
+        $puskesmas = HealthAgency::where('id', $healthAgency->id)
+            ->with('polyclinics', 'polyclinics.poly_master')->get();
+
+        $results = [];
+        foreach ($puskesmas as $row) {
+            foreach ($row->polyclinics as $polyclinic) {
+                $results[] = $polyclinic->poly_master;
+            }
+        }
+
+        return response()->json($results, 200);
     }
 }
