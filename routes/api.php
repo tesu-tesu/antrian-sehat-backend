@@ -35,6 +35,8 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('user.search-health-agency')->middleware('isPasien');
         Route::get('get-waiting-list/', 'WaitingListController@getWaitingList')
             ->name('user.get-waiting-list')->middleware('isPasien');
+        Route::post('create-waiting-list/', 'WaitingListController@createWaitingList')
+            ->name('user.create-waiting-list')->middleware('isPasien');
     });
 });
 

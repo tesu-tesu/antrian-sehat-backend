@@ -37,6 +37,10 @@ class WaitingListController extends Controller
      */
     public function store(Request $request)
     {
+        return ($this->createWaitingList($request));
+    }
+
+    public function createWaitingList(Request $request) {
         $validator = Validator::make($request->all(), [
             'schedule' => 'required|numeric',
             'registered_date' => 'required|date',
