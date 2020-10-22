@@ -182,4 +182,41 @@ class WaitingListController extends Controller
             ], 500);
         }
     }
+
+    public function getWaitingList() {
+        $userId = Auth::id();
+        date_default_timezone_set ('Asia/Jakarta');
+
+        $currentWaitingList = WaitingList::where('user_id', $userId)
+                                ->where('registered_date','=', date('Y-m-d'))
+                                ->get();
+
+        $futureWaitingList = WaitingList::where('user_id', $userId)
+                                ->where('registered_date', '>', date('Y-m-d'))
+                                ->get();
+        
+        $historyWaitingList = WaitingList::where('user_id', $userId)
+                                ->where('status', 'Dibatalkan')
+                                ->orWhere('status', 'Sudah Diperiksa')
+                                ->get();
+        
+        if(!empty($currentWaitingList)) {
+            $currentWaitingList = 'There\'s no waiting list for you today';
+        }
+
+        if(!empty($historyWaitingList)) {
+            $historyWaitingList = 'You didn\'t have any history';
+        }
+
+        if(!empty($futureWaitingList)) {
+            $futureWaitingList = 'You don\'t have any future waiting list';
+        }
+
+        return response()->json([
+            'success' => true,
+            'currentWaitingList' => $currentWaitingList,
+            'historyWaitingList' => $historyWaitingList,
+            'futureWaitingList' => $futureWaitingList,
+        ], 200);
+    }
 }
