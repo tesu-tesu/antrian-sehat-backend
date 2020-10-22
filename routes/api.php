@@ -19,7 +19,6 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::post('refresh', 'AuthController@refresh')->name('refresh');
     });
 
-    Route::resource('user', 'UserController');
     Route::group(['prefix'=>'user'], function (){
         Route::post('change-password/{user}', 'UserController@changePassword')
             ->name('user.change-password');
@@ -38,6 +37,7 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::post('create-waiting-list/', 'WaitingListController@createWaitingList')
             ->name('user.create-waiting-list')->middleware('isPasien');
     });
+    Route::resource('user', 'UserController');
 });
 
 Route::group(['prefix'=>'auth','as'=>'auth.'], function (){
