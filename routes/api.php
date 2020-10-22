@@ -33,6 +33,8 @@ Route::group(['middleware' => ['auth:api']], function () {
 
         Route::post('search/', 'HealthAgencyController@searchHealthAgency')
             ->name('user.search-health-agency')->middleware('isPasien');
+        Route::get('get-waiting-list/', 'WaitingListController@getWaitingList')
+            ->name('user.get-waiting-list')->middleware('isPasien');
     });
 });
 
