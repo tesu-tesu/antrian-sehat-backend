@@ -26,18 +26,18 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('user.change-image');
 
         Route::get('polymaster/{healthAgency}/', 'HealthAgencyController@userShowPolymaster')
-            ->name('user.show-polymaster')->middleware('isPasien');
+            ->name('user.show-polymaster')->middleware('roleUser:Pasien');
         Route::get('health-agency/{polymaster}/', 'PolyclinicController@userShowHealthAgency')
-            ->name('user.show-health-agency')->middleware('isPasien');
+            ->name('user.show-health-agency')->middleware('roleUser:Pasien');
 
         Route::post('search/', 'HealthAgencyController@searchHealthAgency')
-            ->name('user.search-health-agency')->middleware('isPasien');
+            ->name('user.search-health-agency')->middleware('roleUser:Pasien');
         Route::get('get-waiting-list/', 'WaitingListController@getWaitingList')
-            ->name('user.get-waiting-list')->middleware('isPasien');
+            ->name('user.get-waiting-list')->middleware('roleUser:Pasien');
         Route::post('create-waiting-list/', 'WaitingListController@createWaitingList')
-            ->name('user.create-waiting-list')->middleware('isPasien');
+            ->name('user.create-waiting-list')->middleware('roleUser:Pasien');
         Route::get('show-nearest-waiting-list/', 'HomeController@showNearestWaitingList')
-            ->name('user.show-nearest-waiting-list')->middleware('isPasien');
+            ->name('user.show-nearest-waiting-list')->middleware('roleUser:Pasien');
     });
     Route::resource('user', 'UserController');
 });
@@ -54,10 +54,10 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'admin'], function (){
         Route::get('waiting-list', 'HealthAgencyController@showWaitingList')
             ->name('show-waiting-list');
    });
-    Route::resource('health-agency', 'HealthAgencyController')->middleware('isAdmin');
+    Route::resource('health-agency', 'HealthAgencyController')->middleware('roleUser:Admin');
 
-   Route::resource('poly-master', 'PolyMasterController')->middleware(['isAdmin', 'isSuperAdmin']);
-   Route::resource('schedule', 'ScheduleController')->middleware('isAdmin');
-   Route::resource('polyclinic', 'PolyclinicController')->middleware('isAdmin');
-   Route::resource('waiting-list', 'WaitingListController')->middleware('isAdmin');
+   Route::resource('poly-master', 'PolyMasterController')->middleware(['roleUser:Admin', 'roleUser:Super Admin']);
+   Route::resource('schedule', 'ScheduleController')->middleware('roleUser:Admin');
+   Route::resource('polyclinic', 'PolyclinicController')->middleware('roleUser:Admin');
+   Route::resource('waiting-list', 'WaitingListController')->middleware('roleUser:Admin');
 });

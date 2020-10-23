@@ -11,14 +11,9 @@ use Illuminate\Support\Facades\Storage;
 class UserController extends Controller
 {
    public function __construct() {
-      $this->middleware('isAdmin')->only(['index', 'show']);
-      $this->middleware('isSuperAdmin')->only(['store', 'update', 'destroy']);
-      $this->middleware('isPasien')->only(['changePassword', 'changeImage']);
-    //   $this->middleware([
-    //       ['isAdmin' => ['only' => ['index', 'show']]],
-    //       ['isSuperAdmin' => ['only' => ['store', 'update', 'destroy','index', 'show']]],
-    //       ['isPasien' => ['only' => ['changePassword', 'changeImage']]],
-    //   ]);
+      $this->middleware('roleUser:Admin')->only(['index', 'show']);
+      $this->middleware('roleUser:Super Admin')->only(['store', 'update', 'destroy']);
+      $this->middleware('roleUser:Pasien')->only(['changePassword', 'changeImage']);
    }
     /**
      * Display a listing of the resource.
