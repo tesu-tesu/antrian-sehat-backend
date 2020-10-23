@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use DB;
 use Auth;
 use App\WaitingList;
 use Illuminate\Http\Request;
@@ -192,7 +193,7 @@ class WaitingListController extends Controller
         date_default_timezone_set ('Asia/Jakarta');
 
         $currentWaitingList = WaitingList::where('user_id', $userId)
-                                ->where('registered_date','=', date('Y-m-d'))
+                                ->where('registered_date', date('Y-m-d'))
                                 ->get();
 
         $futureWaitingList = WaitingList::where('user_id', $userId)
@@ -200,21 +201,12 @@ class WaitingListController extends Controller
                                 ->get();
         
         $historyWaitingList = WaitingList::where('user_id', $userId)
-                                ->where('status', 'Dibatalkan')
-                                ->orWhere('status', 'Sudah Diperiksa')
-                                ->get();
-        
-        if(!empty($currentWaitingList)) {
-            $currentWaitingList = 'There\'s no waiting list for you today';
-        }
-
-        if(!empty($historyWaitingList)) {
-            $historyWaitingList = 'You didn\'t have any history';
-        }
-
-        if(!empty($futureWaitingList)) {
-            $futureWaitingList = 'You don\'t have any future waiting list';
-        }
+                                ->where(function($q) {
+                                    $q->where('status', 'Dibatalkan')
+                                      ->orWhere('status', 'Sudah Diperiksa');
+                                })
+                                // ->where('registered_date', '<', date('Y-m-d'))
+                                ->get();                                
 
         return response()->json([
             'success' => true,
