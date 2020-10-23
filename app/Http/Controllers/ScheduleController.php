@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\PolyMaster;
+use App\Polyclinic;
 
 class ScheduleController extends Controller
 {
@@ -148,5 +150,14 @@ class ScheduleController extends Controller
                 'message' => 'Schedule cannot be deleted'
             ], 500);
         }
+    }
+
+    public function showSchedule(PolyMaster $polymaster){
+        $schedule = Polyclinic::with(['health_agency' => function($q){
+            $q->select('id', 'name')->get();
+        },'schedules'])
+        ->where('poly_master_id', $polymaster->id)->get();
+
+        return response()->json($schedule, 200);
     }
 }

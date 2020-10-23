@@ -35,6 +35,8 @@ Route::group(['middleware' => ['auth:api']], function () {
                 ->name('user.get-waiting-list');
             Route::get('show-nearest-waiting-list', 'WaitingListController@showNearestWaitingList')
                 ->name('user.show-nearest-waiting-list');
+            Route::get('show-schedule/{polymaster}', 'ScheduleController@showSchedule')
+                ->name('user.show-schedule');
         });
 
         Route::post('search', 'HealthAgencyController@searchHealthAgency')
@@ -58,7 +60,8 @@ Route::group(['middleware' => ['auth:api']], function () {
             Route::resource('waiting-list', 'WaitingListController');
         });
     });
-
+    Route::get('show-schedule/{polymaster}', 'ScheduleController@showSchedule')
+        ->name('user.show-schedule')->middleware('roleUser:Pasien');
     Route::resource('user', 'UserController');
 });
 
