@@ -60,8 +60,7 @@ Route::group(['middleware' => ['auth:api']], function () {
             Route::resource('waiting-list', 'WaitingListController');
         });
     });
-    Route::get('show-schedule/{polymaster}', 'ScheduleController@showSchedule')
-        ->name('user.show-schedule')->middleware('roleUser:Pasien');
+
     Route::resource('user', 'UserController');
 });
 
