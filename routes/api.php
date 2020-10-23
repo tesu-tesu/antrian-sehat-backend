@@ -38,6 +38,11 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('user.create-waiting-list')->middleware('roleUser:Pasien');
         Route::get('show-nearest-waiting-list/', 'HomeController@showNearestWaitingList')
             ->name('user.show-nearest-waiting-list')->middleware('roleUser:Pasien');
+
+
+        Route::get('show-schedule/{polymaster}', 'ScheduleController@showSchedule')
+            ->name('user.show-schedule')->middleware('roleUser:Pasien');
+
     });
     Route::resource('user', 'UserController');
 });
