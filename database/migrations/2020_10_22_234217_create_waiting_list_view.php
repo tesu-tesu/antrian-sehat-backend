@@ -26,7 +26,8 @@ class CreateWaitingListView extends Migration
                         WHERE wl.registered_date = w.registered_date
                         AND wl.schedule_id = w.schedule_id
                         AND w.status = 'Sedang Diperiksa'
-                        AND wl.schedule_id = s.id)");
+                        AND wl.schedule_id = s.id
+                        ORDER BY distance_number");
     }
 
     /**
