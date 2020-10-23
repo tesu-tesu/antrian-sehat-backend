@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Validator;
 
 class ScheduleController extends Controller
 {
+    public function __construct() {
+        $this->middleware('roleUser:Super Admin')->only(['show']);
+        $this->middleware('roleUser:Pasien')->only(['show']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -25,7 +29,6 @@ class ScheduleController extends Controller
      */
     public function create()
     {
-        echo "asdsad";die;
         //
     }
 
@@ -69,7 +72,7 @@ class ScheduleController extends Controller
      */
     public function show(Schedule $schedule)
     {
-        //
+        return response()->json($schedule, 200);
     }
 
     /**
@@ -133,13 +136,6 @@ class ScheduleController extends Controller
     public function destroy(Schedule $schedule)
     {
         $data = Schedule::find($schedule->id);
-
-        if (!$data) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Schedule data not found'
-            ],400);
-        }
 
         if ($data->delete()) {
             return response()->json([

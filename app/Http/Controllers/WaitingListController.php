@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Validator;
 
 class WaitingListController extends Controller
 {
+    public function __construct() {
+        $this->middleware('roleUser:Super Admin')->only(['show']);
+        $this->middleware('roleUser:Pasien')->only(['store', 'show']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -38,10 +42,6 @@ class WaitingListController extends Controller
      */
     public function store(Request $request)
     {
-        return ($this->createWaitingList($request));
-    }
-
-    public function createWaitingList(Request $request) {
         $validator = Validator::make($request->all(), [
             'schedule' => 'required|numeric',
             'registered_date' => 'required|date',
@@ -53,23 +53,23 @@ class WaitingListController extends Controller
         }
 
         $ordered = WaitingList::select('id')
-                            ->where('residence_number', $request->residence_number)
-                            ->where('schedule_id', $request->schedule)
-                            ->where('registered_date', $request->registered_date)
-                            ->first();
-        
+            ->where('residence_number', $request->residence_number)
+            ->where('schedule_id', $request->schedule)
+            ->where('registered_date', $request->registered_date)
+            ->first();
+
         if($ordered != null)
             return response()->json($validator->errors(), 400);
 
         $latestOrder = WaitingList::select('order_number')
-                            ->where('registered_date', $request->registered_date)
-                            ->where('schedule_id', $request->schedule)
-                            ->latest()->first();
+            ->where('registered_date', $request->registered_date)
+            ->where('schedule_id', $request->schedule)
+            ->latest()->first();
         if($latestOrder == null) {
             $latestOrder = new WaitingList();
         }
         $latestOrder->order_number++;
-        
+
         $waitingListId = WaitingList::create([
             'user_id' => Auth::id(),
             'schedule_id' => $request->schedule,
@@ -80,9 +80,9 @@ class WaitingListController extends Controller
         ])->id;
 
         $waitingList = WaitingList::where('id', $waitingListId)
-                            ->update([
-                                'barcode' => $waitingListId . '_' . $request->residence_number,
-                            ]);
+            ->update([
+                'barcode' => $waitingListId . '_' . $request->residence_number,
+            ]);
 
         if($waitingList)
             return response()->json([
@@ -106,18 +106,7 @@ class WaitingListController extends Controller
      */
     public function show(WaitingList $waitingList)
     {
-        $result = WaitingList::where('id', $waitingList->id);
-
-        if($result)
-            return response()->json([
-                'success' => true,
-                'waiting_list' => $result,
-            ], 200);
-        else
-            return response()->json([
-                'success' => false,
-                'waiting_list' => $result,
-            ], 500);
+        return response()->json($waitingList, 200);
     }
 
     /**
@@ -201,7 +190,7 @@ class WaitingListController extends Controller
                                 ->where('user_id', $userId)
                                 ->where('registered_date', '>', date('Y-m-d'))
                                 ->get();
-        
+
         $historyWaitingList = DB::table('waiting_list_view')
                                 ->where('user_id', $userId)
                                 ->where(function($q) {
@@ -209,13 +198,40 @@ class WaitingListController extends Controller
                                       ->orWhere('status', 'Sudah Diperiksa');
                                 })
                                 // ->where('registered_date', '<', date('Y-m-d'))
-                                ->get();                                
+                                ->get();
 
         return response()->json([
             'success' => true,
             'currentWaitingList' => $currentWaitingList,
             'historyWaitingList' => $historyWaitingList,
             'futureWaitingList' => $futureWaitingList,
+        ], 200);
+    }
+
+    public function showNearestWaitingList() {
+        $userId = Auth::id();
+
+        $waitingList = DB::table('waiting_list_view')
+            ->where('user_id', $userId)
+            ->where('distance_number', '>=', '0')
+            ->where(function($q) {
+                $q->where('status', 'Belum Diperiksa')
+                    ->orWhere('status', 'Sedang Diperiksa');
+            })->first();
+
+        if($waitingList) {
+            $message = "Successfully get nearest waiting list";
+            $error = true;
+        }
+        else {
+            $message = "You don\'t have any nearest waiting list";
+            $error = false;
+        }
+
+        return response()->json([
+            'success' => $error,
+            'message' => $message,
+            'waiting_list' => $waitingList,
         ], 200);
     }
 }
