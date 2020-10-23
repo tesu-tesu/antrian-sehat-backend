@@ -26,39 +26,36 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::post('change-image/{user}', 'UserController@changeImage')
             ->name('user.change-image');
 
-        Route::group(['middleware' => ['roleUser:Pasien']], function (){
-            Route::get('polymaster/{healthAgency}/', 'HealthAgencyController@userShowPolymaster')
-                ->name('user.show-polymaster');
-            Route::get('health-agency/{polymaster}/', 'PolyclinicController@userShowHealthAgency')
-                ->name('user.show-health-agency');
-            Route::get('get-waiting-list', 'WaitingListController@getWaitingList')
-                ->name('user.get-waiting-list');
-            Route::get('show-nearest-waiting-list', 'WaitingListController@showNearestWaitingList')
-                ->name('user.show-nearest-waiting-list');
-            Route::get('show-schedule/{polymaster}', 'ScheduleController@showSchedule')
-                ->name('user.show-schedule');
-        });
+        //userRole : Pasien
+        Route::get('polymaster/{healthAgency}/', 'HealthAgencyController@userShowPolymaster')
+            ->name('user.show-polymaster');
+        Route::get('health-agency/{polymaster}/', 'PolyclinicController@userShowHealthAgency')
+            ->name('user.show-health-agency');
+        Route::get('get-waiting-list', 'WaitingListController@getWaitingList')
+            ->name('user.get-waiting-list');
+        Route::get('show-nearest-waiting-list', 'WaitingListController@showNearestWaitingList')
+            ->name('user.show-nearest-waiting-list');
+        Route::get('show-schedule/{polymaster}', 'ScheduleController@showSchedule')
+            ->name('user.show-schedule');
 
         Route::post('search', 'HealthAgencyController@searchHealthAgency')
             ->name('user.search-health-agency');
     });
 
-    //Admin
+    //userRole : Admin
     Route::group(['prefix'=>'admin'], function (){
-        Route::group(['middleware' => ['roleUser:Admin',], 'prefix' => 'health-agency', 'as' => 'health-agency.'], function (){
+        Route::group(['prefix' => 'health-agency', 'as' => 'health-agency.'], function (){
             Route::get('{healthAgency}/polyclinic', 'HealthAgencyController@adminShowPolyclinic')
                 ->name('show-polyclinic');
             Route::get('waiting-list', 'HealthAgencyController@showWaitingList')
                 ->name('show-waiting-list');
         });
 
-        Route::group(['middleware' => ['roleUser:Admin']], function (){
-            Route::resource('health-agency', 'HealthAgencyController');
-            Route::resource('poly-master', 'PolyMasterController');
-            Route::resource('schedule', 'ScheduleController');
-            Route::resource('polyclinic', 'PolyclinicController');
-            Route::resource('waiting-list', 'WaitingListController');
-        });
+        Route::resource('health-agency', 'HealthAgencyController');
+        Route::resource('poly-master', 'PolyMasterController');
+        Route::resource('schedule', 'ScheduleController');
+        Route::resource('polyclinic', 'PolyclinicController');
+        Route::resource('waiting-list', 'WaitingListController');
     });
 
     Route::resource('user', 'UserController');
