@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Validator;
 
 class HealthAgencyController extends Controller
 {
+    public function __construct() {
+        $this->middleware('roleUser:Super Admin')->only(['show']);
+        $this->middleware('roleUser:Pasien')->only(['show']);
+    }
     /**
      * Display a listing of the resource.
      *

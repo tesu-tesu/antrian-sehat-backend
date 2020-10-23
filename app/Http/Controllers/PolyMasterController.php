@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Validator;
 
 class PolyMasterController extends Controller
 {
+    public function __construct() {
+        $this->middleware('roleUser:Super Admin')->only(['show']);
+        $this->middleware('roleUser:Pasien')->only(['show']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -19,8 +23,6 @@ class PolyMasterController extends Controller
     public function index()
     {
         //
-        $polyMaster = PolyMaster::All();
-        //return PolyMasterResource::collection($polyMaster);
     }
 
     /**
@@ -41,7 +43,6 @@ class PolyMasterController extends Controller
      */
     public function store(Request $request)
     {
-        //
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
         ]);
@@ -72,7 +73,6 @@ class PolyMasterController extends Controller
      */
     public function show(PolyMaster $polyMaster)
     {
-        //display health Agency
         return response()->json($polyMaster, 200);
     }
 
@@ -96,7 +96,6 @@ class PolyMasterController extends Controller
      */
     public function update(Request $request, PolyMaster $polyMaster)
     {
-        //
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
         ]);
@@ -134,7 +133,6 @@ class PolyMasterController extends Controller
      */
     public function destroy(PolyMaster $polyMaster)
     {
-        //Delete
         if ($polyMaster->delete()) {
             return response()->json([
                 'success' => true,
