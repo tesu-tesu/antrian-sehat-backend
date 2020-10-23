@@ -36,6 +36,8 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('user.get-waiting-list')->middleware('isPasien');
         Route::post('create-waiting-list/', 'WaitingListController@createWaitingList')
             ->name('user.create-waiting-list')->middleware('isPasien');
+        Route::get('show-nearest-waiting-list/', 'HomeController@showNearestWaitingList')
+            ->name('user.show-nearest-waiting-list')->middleware('isPasien');
     });
     Route::resource('user', 'UserController');
 });
