@@ -15,7 +15,7 @@ class CreateWaitingListView extends Migration
     {
         DB::statement("CREATE VIEW waiting_list_view AS
                         SELECT wl.user_id, wl.residence_number, wl.registered_date, wl.order_number, 
-                        wl.barcode, wl.status, day, pm.name polyclinic, h.name health_agency, 
+                        wl.barcode, wl.status, wl.schedule_id, day, pm.name polyclinic, h.name health_agency, 
                         (wl.order_number - w.order_number) distance_number, w.order_number current_number, 
                             (SELECT MAX(wx.order_number)
                             FROM waiting_lists AS wx

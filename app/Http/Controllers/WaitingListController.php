@@ -192,15 +192,18 @@ class WaitingListController extends Controller
         $userId = Auth::id();
         date_default_timezone_set ('Asia/Jakarta');
 
-        $currentWaitingList = WaitingList::where('user_id', $userId)
+        $currentWaitingList = DB::table('waiting_list_view')
+                                ->where('user_id', $userId)
                                 ->where('registered_date', date('Y-m-d'))
                                 ->get();
 
-        $futureWaitingList = WaitingList::where('user_id', $userId)
+        $futureWaitingList = DB::table('waiting_list_view')
+                                ->where('user_id', $userId)
                                 ->where('registered_date', '>', date('Y-m-d'))
                                 ->get();
         
-        $historyWaitingList = WaitingList::where('user_id', $userId)
+        $historyWaitingList = DB::table('waiting_list_view')
+                                ->where('user_id', $userId)
                                 ->where(function($q) {
                                     $q->where('status', 'Dibatalkan')
                                       ->orWhere('status', 'Sudah Diperiksa');
