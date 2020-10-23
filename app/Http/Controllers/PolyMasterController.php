@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Validator;
 class PolyMasterController extends Controller
 {
     public function __construct() {
-        $this->middleware('roleUser:Super Admin')->only(['show']);
-        $this->middleware('roleUser:Pasien')->only(['show']);
+        $this->middleware('roleUser:Admin')->except(['show']);
+        $this->middleware('roleUser:Admin,Super Admin,Pasien')->only(['show']);
     }
     /**
      * Display a listing of the resource.

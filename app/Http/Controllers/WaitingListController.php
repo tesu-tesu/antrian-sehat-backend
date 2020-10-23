@@ -11,8 +11,9 @@ use Illuminate\Support\Facades\Validator;
 class WaitingListController extends Controller
 {
     public function __construct() {
-        $this->middleware('roleUser:Super Admin')->only(['show']);
-        $this->middleware('roleUser:Pasien')->only(['store', 'show']);
+        $this->middleware('roleUser:Admin')->except(['show']);
+        $this->middleware('roleUser:Admin,Super Admin,Pasien')->only(['show']);
+        $this->middleware('roleUser:Pasien')->only(['store']);
     }
     /**
      * Display a listing of the resource.

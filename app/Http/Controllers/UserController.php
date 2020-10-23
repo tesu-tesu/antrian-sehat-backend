@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 class UserController extends Controller
 {
    public function __construct() {
-      $this->middleware('roleUser:Admin')->only(['index', 'show']);
+      $this->middleware('roleUser:Admin,Super Admin')->only(['show']);
       $this->middleware('roleUser:Super Admin')->only(['store', 'update', 'destroy']);
       $this->middleware('roleUser:Pasien')->only(['changePassword', 'changeImage']);
    }
@@ -22,7 +22,7 @@ class UserController extends Controller
      */
     public function index()
     {
-
+        //
     }
 
     /**

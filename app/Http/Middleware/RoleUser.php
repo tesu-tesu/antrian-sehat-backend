@@ -14,12 +14,12 @@ class RoleUser
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next, $role = null)
+    public function handle($request, Closure $next, $role1 = null, $role2 = null, $role3 = null)
     {
         if(Auth::check()){
             $role_db = auth()->user()->role;
 
-            if($role_db != $role)
+            if($role_db != $role1 && $role_db != $role2 && $role_db != $role3)
                 return response()->json([
                     'error' => 'Not authorized.',
 //                    'message' => 'you must be an patient to access this route'
