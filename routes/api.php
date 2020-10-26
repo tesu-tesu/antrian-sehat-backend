@@ -45,7 +45,7 @@ Route::group(['middleware' => ['auth:api']], function () {
     //userRole : Admin
     Route::group(['prefix'=>'admin'], function (){
         Route::group(['prefix' => 'health-agency', 'as' => 'health-agency.'], function (){
-            Route::get('{healthAgency}/polyclinic', 'HealthAgencyController@adminShowPolyclinic')
+            Route::get('{healthAgency}/polyclinic', 'PolyclinicController@ShowPolyclinicOfHA')
                 ->name('show-polyclinic');
             Route::get('waiting-list', 'HealthAgencyController@showWaitingList')
                 ->name('show-waiting-list');

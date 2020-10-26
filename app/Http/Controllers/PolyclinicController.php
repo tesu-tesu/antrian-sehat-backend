@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\HealthAgency;
 use App\Polyclinic;
 use App\PolyMaster;
 use Illuminate\Http\Request;
@@ -162,5 +163,14 @@ class PolyclinicController extends Controller
         }
 
         return response()->json($results, 200);
+    }
+
+    public function ShowPolyclinicOfHA(HealthAgency $healthAgency){
+        $schedule = Polyclinic::with(['poly_master' => function($q){
+            $q->select('id', 'name')->get();
+        },'schedules'])
+            ->where('health_agency_id', $healthAgency->id)->get();
+
+        return response()->json($schedule, 200);
     }
 }
