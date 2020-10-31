@@ -11,9 +11,10 @@ use Illuminate\Support\Facades\Validator;
 class WaitingListController extends Controller
 {
     public function __construct() {
-        $this->middleware('roleUser:Admin')->except(['show']);
-        $this->middleware('roleUser:Admin,Super Admin,Pasien')->only(['show']);
-        $this->middleware('roleUser:Pasien')->only(['store']);
+        $this->middleware('roleUser:Admin')->except(['store', 'show', 'showNearestWaitingList', 'getWaitingList']);
+        $this->middleware('roleUser:Admin,Pasien,Super Admin')->only(['show']);
+        $this->middleware('roleUser:Admin,Pasien')->only(['store']);
+        $this->middleware('roleUser:Pasien')->only(['showNearestWaitingList', 'getWaitingList']);
     }
     /**
      * Display a listing of the resource.
@@ -80,12 +81,14 @@ class WaitingListController extends Controller
             'status' => 'Belum Diperiksa',
         ])->id;
 
-        $waitingList = WaitingList::where('id', $waitingListId)
+        $waitingListUpdated = WaitingList::where('id', $waitingListId)
             ->update([
                 'barcode' => $waitingListId . '_' . $request->residence_number,
             ]);
 
-        if($waitingList)
+        $waitingList = WaitingList::where('id', $waitingListId)->first();
+
+        if($waitingListUpdated)
             return response()->json([
                 'success' => true,
                 'message' => 'Add data successfully!',
