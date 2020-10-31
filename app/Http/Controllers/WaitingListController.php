@@ -247,6 +247,7 @@ class WaitingListController extends Controller
             ->first();
 
         if(!$currentWaitingList) {
+            $currentWaitingList = new WaitingList();
             $currentWaitingList->current_number = 0;
             $currentWaitingList->latest_number = 0;
         }
