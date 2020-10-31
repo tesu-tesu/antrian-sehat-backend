@@ -11,10 +11,10 @@ use Illuminate\Support\Facades\Validator;
 class WaitingListController extends Controller
 {
     public function __construct() {
-        $this->middleware('roleUser:Admin')->except(['store', 'show', 'showNearestWaitingList', 'getWaitingList']);
+        $this->middleware('roleUser:Admin')->except(['store', 'show', 'showNearestWaitingList', 'getWaitingList', 'getCurrentWaitingListRegist']);
         $this->middleware('roleUser:Admin,Pasien,Super Admin')->only(['show']);
         $this->middleware('roleUser:Admin,Pasien')->only(['store']);
-        $this->middleware('roleUser:Pasien')->only(['showNearestWaitingList', 'getWaitingList']);
+        $this->middleware('roleUser:Pasien')->only(['showNearestWaitingList', 'getWaitingList', 'getCurrentWaitingListRegist']);
     }
     /**
      * Display a listing of the resource.
@@ -236,6 +236,25 @@ class WaitingListController extends Controller
             'success' => $error,
             'message' => $message,
             'waiting_list' => $waitingList,
+        ], 200);
+    }
+    
+    public function getCurrentWaitingListRegist($schedule, $date){
+        $currentWaitingList = DB::table('waiting_list_view')
+            ->select('current_number', 'latest_number')
+            ->where('schedule_id', $schedule)
+            ->where('registered_date', $date)
+            ->first();
+
+        if(!$currentWaitingList) {
+            $currentWaitingList->current_number = 0;
+            $currentWaitingList->latest_number = 0;
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Get the current and latest number in specific schedule and date",
+            'waiting_list' => $currentWaitingList,
         ], 200);
     }
 }
