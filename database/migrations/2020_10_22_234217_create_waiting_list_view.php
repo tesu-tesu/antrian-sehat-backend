@@ -25,9 +25,12 @@ class CreateWaitingListView extends Migration
                         polyclinics AS p, poly_masters AS pm, health_agencies AS h
                         WHERE wl.registered_date = w.registered_date
                         AND wl.schedule_id = w.schedule_id
-                        AND w.status = 'Sedang Diperiksa'
+                        AND (w.status = 'Sedang Diperiksa' OR w.order_number = (SELECT MIN(wx.order_number)
+                            FROM waiting_lists AS wx
+                            WHERE wx.schedule_id = w.schedule_id AND wx.registered_date = w.registered_date
+                            GROUP BY wx.schedule_id AND wx.registered_date))
                         AND wl.schedule_id = s.id
-                        ORDER BY distance_number");
+                        ORDER BY registered_date, distance_number");
     }
 
     /**
