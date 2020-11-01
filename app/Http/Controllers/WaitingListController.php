@@ -214,10 +214,12 @@ class WaitingListController extends Controller
 
     public function showNearestWaitingList() {
         $userId = Auth::id();
+        date_default_timezone_set ('Asia/Jakarta');
 
         $waitingList = DB::table('waiting_list_view')
             ->where('user_id', $userId)
             ->where('distance_number', '>=', '0')
+            ->where('registered_date', '>=', date('Y-m-d'))
             ->where(function($q) {
                 $q->where('status', 'Belum Diperiksa')
                     ->orWhere('status', 'Sedang Diperiksa');
