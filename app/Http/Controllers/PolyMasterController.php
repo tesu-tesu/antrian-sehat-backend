@@ -22,7 +22,7 @@ class PolyMasterController extends Controller
      */
     public function index()
     {
-        $polymasters = PolyMaster::all();
+        $polymasters = PolyMaster::paginate(8);
         return response()->json($polymasters, 200);
     }
 
