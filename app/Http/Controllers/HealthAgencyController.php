@@ -26,7 +26,7 @@ class HealthAgencyController extends Controller
      */
     public function index()
     {
-        $healthAgencies = HealthAgency::all();
+        $healthAgencies = HealthAgency::paginate(8);
         return response()->json($healthAgencies, 200);
     }
 
