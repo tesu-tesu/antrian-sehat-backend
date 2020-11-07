@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Schedule;
+use Carbon\Carbon;
 use App\HealthAgency;
 use App\Polyclinic;
 use App\PolyMaster;
@@ -166,11 +168,25 @@ class PolyclinicController extends Controller
     }
 
     public function ShowPolyclinicOfHA(HealthAgency $healthAgency){
-        $schedule = Polyclinic::with(['poly_master' => function($q){
+        $schedules = Polyclinic::with(['poly_master' => function($q){
             $q->select('id', 'name')->get();
         },'schedules'])
             ->where('health_agency_id', $healthAgency->id)->get();
 
-        return response()->json($schedule, 200);
+        foreach($schedules as $row) {
+            foreach($row["schedules"] as $schedule) {
+                $day = Schedule::where('id', $schedule->id)->first()->day;
+                $dayId = array_search($day, DAY) + 1;
+                $today = Carbon::now()->dayOfWeek;
+                $add = $dayId;
+                if($dayId >= $today)
+                    $add -= $today;
+                $schedule["day"] = $dayId;
+                $schedule["date"] = (Carbon::now()->addDays($add)->toDateString());
+            }
+        }
+        return response()->json($schedules, 200);
     }
+
+
 }
