@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Rules\MatchOldPassword;
@@ -13,7 +14,7 @@ class UserController extends Controller
    public function __construct() {
       $this->middleware('roleUser:Admin,Super Admin')->only(['show']);
       $this->middleware('roleUser:Super Admin')->only(['store', 'update', 'destroy']);
-      $this->middleware('roleUser:Pasien')->only(['changePassword', 'changeImage']);
+      $this->middleware('roleUser:Pasien')->only(['changePassword', 'changeImage', 'getResidenceNumber']);
    }
     /**
      * Display a listing of the resource.
@@ -215,6 +216,24 @@ class UserController extends Controller
                 'success' => false,
                 'message' => 'User can not be deleted'
             ], 500);
+        }
+    }
+
+    public function getResidenceNumber() {
+        $user = Auth::user()->residence_number;
+
+        if($user != null) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Success get the residence number',
+                'residence_number' => $user,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => true,
+                'message' => 'User doesn\'t have residence number',
+                'residence_number' => 0,
+            ], 200);
         }
     }
 }
