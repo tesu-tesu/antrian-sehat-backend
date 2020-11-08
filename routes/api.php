@@ -42,6 +42,8 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('user.search-health-agency');
         Route::get('get-waiting-list/{schedule}/{date}', 'WaitingListController@getCurrentWaitingListRegist')
             ->name('user.get-waiting-list-by-schedule');
+        Route::get('get-residence-number/', 'UserController@getResidenceNumber')
+            ->name('user.get-residence-number');
     });
 
     //userRole : Admin
