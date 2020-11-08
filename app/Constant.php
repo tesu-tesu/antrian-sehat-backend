@@ -6,4 +6,4 @@
 
 define('PATIENT_STATUS', ['Belum Diperiksa', 'Sedang Diperiksa', 'Sudah Diperiksa', 'Dibatalkan']);
 define('ROLE', ['Admin', 'Super Admin', 'Pasien']);
-define('DAY', ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']);
+define('DAY', ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']);
