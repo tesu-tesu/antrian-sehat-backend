@@ -176,15 +176,23 @@ class PolyclinicController extends Controller
         foreach($schedules as $row) {
             foreach($row["schedules"] as $schedule) {
                 $day = Schedule::where('id', $schedule->id)->first()->day;
-                $dayId = array_search($day, DAY) + 1;
+                $dayId = array_search($day, DAY);
+                $dayId = ($dayId)%7;
                 $today = Carbon::now()->dayOfWeek;
-                $add = $dayId;
-                if($dayId >= $today)
-                    $add -= $today;
+                $add = $dayId - $today;
+                if($add < 0){ //jika selisih negatif brrti ganti date ke mingdep
+                    $add += 7;
+                }
                 $schedule["day"] = $dayId;
                 $schedule["date"] = (Carbon::now()->addDays($add)->toDateString());
             }
+            //sorting based on index day
+            $collection = collect($row["schedules"]);
+            $sorted = $collection->sortBy('day');
+            $row["sorted"] = $sorted->values()->all();
+
         }
+
         return response()->json($schedules, 200);
     }
 
