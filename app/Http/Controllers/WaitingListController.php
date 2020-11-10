@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
 use DB;
 use Auth;
 use App\WaitingList;
+use App\Schedule;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -182,6 +183,7 @@ class WaitingListController extends Controller
         }
     }
 
+    //mengambil data semua antrian yang dimiliki pasien (yang lalu, hari ini, atau hari berikutnya)
     public function getWaitingList() {
         $userId = Auth::id();
         date_default_timezone_set ('Asia/Jakarta');
@@ -213,6 +215,7 @@ class WaitingListController extends Controller
         ], 200);
     }
 
+    //mengambil antrian terdekat dari antrian yang dimiliki pasien (ditampilkan di home)
     public function showNearestWaitingList() {
         $userId = Auth::id();
         date_default_timezone_set ('Asia/Jakarta');
@@ -242,17 +245,31 @@ class WaitingListController extends Controller
         ], 200);
     }
 
-    public function getCurrentWaitingListRegist(){
+    //mengambil data jumlah antrian saat ini untuk poli terkait pada tanggal terkait
+    public function getCurrentWaitingListRegist(Schedule $schedule, $date){
+        $message = $this->validateScheduleDate($schedule, $date);
+        if($message != "")
+            return response()->json([
+                'success' => false,
+                'message' => $message,
+            ], 400);
+
         $currentWaitingList = DB::table('waiting_list_view')
-            ->select('order_number', 'current_number', 'latest_number')
-            ->where('registered_date', date('Y-m-d'))
-            ->where('user_id', auth()->id())
+            ->select('current_number', 'latest_number', 'health_agency', 'polyclinic', 'day', 'registered_date')
+            ->where('schedule_id', $schedule)
+            ->where('registered_date', $date)
             ->first();
 
         if(!$currentWaitingList) {
+            $schedule = Schedule::find($schedule->id);
+            $poly = $schedule->polyclinic;
             $currentWaitingList = new WaitingList();
             $currentWaitingList->current_number = 0;
             $currentWaitingList->latest_number = 0;
+            $currentWaitingList->health_agency = $poly->health_agency->name;
+            $currentWaitingList->polyclinic = $poly->poly_master->name;
+            $currentWaitingList->day = $schedule->day;
+            $currentWaitingList->registered_date = $date;
         }
 
         return response()->json([
@@ -260,5 +277,37 @@ class WaitingListController extends Controller
             'message' => "Get the current and latest number in specific schedule and date",
             'waiting_list' => $currentWaitingList,
         ], 200);
+    }
+
+    //melakukan validasi antara jadwal poli dengan tanggal yang diajukan calon pasien
+    private function validateScheduleDate(Schedule $schedule, $date) {
+        $timezone = 'Asia/Jakarta';
+
+        $date = Carbon::parse($date, $timezone);
+        $today = Carbon::today($timezone);
+
+        $dayOfSchedule = array_search($schedule->day, DAY);
+        $dayOfDate = $date->dayOfWeek;
+        $timeClose = Carbon::parse($schedule->time_close, $timezone);
+
+        // var_dump($today->nowWithSameTz()->format('H:i'));
+        //jika antara jadwal dan tanggal memiliki hari yang berbeda
+        if($dayOfSchedule != $dayOfDate)
+            return "Maaf, tanggal pilihan anda tidak sesuai dengan jadwal di puskesmas";
+
+        //jika mencoba mendaftar untuk hari yang lalu
+        if($date < $today)
+            return "Maaf, anda hanya bisa mendaftar untuk satu minggu ke depan";
+        
+        //jika tanggal pendaftaran lebih dari seminggu dari hari ini
+        if($today->floatDiffInDays($date, false) > 7)
+            return "Maaf, anda hanya bisa mendaftar untuk satu minggu ke depan";
+        
+        //jika hari ini dan waktu sekarang 30 menit sebelum puskesmas tutup
+        if($today == $date)
+            if($today->nowWithSameTz()->format('H:i') > $timeClose->addMinutes(-30)->format('H:i'))
+                return "Maaf, puskesmas sudah tutup. Anda hanya bisa mendaftar untuk hari lainnya";
+        
+        return "";
     }
 }
