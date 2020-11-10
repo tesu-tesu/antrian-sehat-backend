@@ -40,7 +40,7 @@ Route::group(['middleware' => ['auth:api']], function () {
 
         Route::post('search', 'HealthAgencyController@searchHealthAgency')
             ->name('user.search-health-agency');
-        Route::get('get-waiting-list/{schedule}/{date}', 'WaitingListController@getCurrentWaitingListRegist')
+        Route::get('get-current-waiting-list', 'WaitingListController@getCurrentWaitingListRegist')
             ->name('user.get-waiting-list-by-schedule');
         Route::get('get-residence-number/', 'UserController@getResidenceNumber')
             ->name('user.get-residence-number');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use DB;
 use Auth;
 use App\WaitingList;
@@ -241,11 +242,11 @@ class WaitingListController extends Controller
         ], 200);
     }
 
-    public function getCurrentWaitingListRegist($schedule, $date){
+    public function getCurrentWaitingListRegist(){
         $currentWaitingList = DB::table('waiting_list_view')
-            ->select('order_number','current_number', 'latest_number')
-            ->where('schedule_id', $schedule)
-            ->where('registered_date', $date)
+            ->select('order_number', 'current_number', 'latest_number')
+            ->where('registered_date', date('Y-m-d'))
+            ->where('user_id', auth()->id())
             ->first();
 
         if(!$currentWaitingList) {
