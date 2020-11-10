@@ -243,7 +243,7 @@ class WaitingListController extends Controller
 
     public function getCurrentWaitingListRegist($schedule, $date){
         $currentWaitingList = DB::table('waiting_list_view')
-            ->select('current_number', 'latest_number')
+            ->select('order_number','current_number', 'latest_number')
             ->where('schedule_id', $schedule)
             ->where('registered_date', $date)
             ->first();
