@@ -33,6 +33,8 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('user.show-health-agency');
         Route::get('get-waiting-list', 'WaitingListController@getWaitingList')
             ->name('user.get-waiting-list');
+        Route::get('get-waiting-list/{schedule}/{date}', 'WaitingListController@getCurrentWaitingListRegist')
+            ->name('user.get-waiting-list-regist');
         Route::get('show-nearest-waiting-list', 'WaitingListController@showNearestWaitingList')
             ->name('user.show-nearest-waiting-list');
         Route::get('show-schedule/{polymaster}', 'ScheduleController@showSchedule')
