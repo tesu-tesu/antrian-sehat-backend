@@ -57,7 +57,7 @@ class WaitingListController extends Controller
             return response()->json($validator->errors(), 400);
         }
         //validate date and schedule
-        $message = $this->validateScheduleDate($schedule, $date);
+        $message = $this->validateScheduleDate(Schedule::find($request->schedule), $request->registered_date);
         if($message != "")
             return response()->json([
                 'success' => false,
