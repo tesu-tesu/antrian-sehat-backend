@@ -338,7 +338,10 @@ class WaitingListController extends Controller
 
     public function adminShowWaitingList(){
         $waiting_list = DB::table('waiting_list_view')
-            ->select('residence_number', 'user_id as user_name', 'order_number', 'polyclinic', 'status')
+            ->select(
+                'id','residence_number', 'user_id as user_name',
+                'order_number', 'polyclinic', 'status'
+            )
             ->where('health_agency_id', Auth::user()->health_agency_id)
             ->paginate(5);
 
