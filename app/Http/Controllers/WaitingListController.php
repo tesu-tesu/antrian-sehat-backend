@@ -215,6 +215,10 @@ class WaitingListController extends Controller
                                 // ->where('registered_date', '<', date('Y-m-d'))
                                 ->get();
 
+        foreach ($historyWaitingList as $history){
+            $history->registered_date = Carbon::parse($history->registered_date)->format('j F Y');
+        }
+
         return response()->json([
             'success' => true,
             'currentWaitingList' => $currentWaitingList,
@@ -303,16 +307,16 @@ class WaitingListController extends Controller
         //jika mencoba mendaftar untuk hari yang lalu
         if($date < $today)
             return "Maaf, anda hanya bisa mendaftar untuk satu minggu ke depan";
-        
+
         //jika tanggal pendaftaran lebih dari seminggu dari hari ini
         if($today->floatDiffInDays($date, false) > 7)
             return "Maaf, anda hanya bisa mendaftar untuk satu minggu ke depan";
-        
+
         //jika hari ini dan waktu sekarang 30 menit sebelum puskesmas tutup
         if($today == $date)
             if($today->nowWithSameTz()->format('H:i') > $timeClose->addMinutes(-30)->format('H:i'))
                 return "Maaf, puskesmas sudah tutup. Anda hanya bisa mendaftar untuk hari lainnya";
-        
+
         return "";
     }
 }
