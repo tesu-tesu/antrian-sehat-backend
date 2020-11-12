@@ -59,6 +59,8 @@ Route::group(['middleware' => ['auth:api']], function () {
                 ->name('show-polyclinic');
             Route::get('waiting-list', 'WaitingListController@adminShowWaitingList')
                 ->name('show-waiting-list');
+            Route::get('change-status/{waiting_list}/{status}', 'WaitingListController@changeStatus')
+                ->name('change-status');
         });
 
         Route::resource('health-agency', 'HealthAgencyController');
