@@ -14,9 +14,12 @@ use Illuminate\Support\Facades\Validator;
 class WaitingListController extends Controller
 {
     public function __construct() {
-        $this->middleware('roleUser:Admin')->except(['store', 'show', 'showNearestWaitingList', 'getWaitingList', 'getCurrentWaitingListRegist']);
-        $this->middleware('roleUser:Admin,Pasien,Super Admin')->only(['show']);
-        $this->middleware('roleUser:Pasien')->only(['showNearestWaitingList', 'getWaitingList', 'getCurrentWaitingListRegist', 'store']);
+        $this->middleware('roleUser:Admin')
+            ->except(['store', 'show', 'showNearestWaitingList', 'getWaitingList', 'getCurrentWaitingListRegist']);
+        $this->middleware('roleUser:Admin,Pasien,Super Admin')
+            ->only(['show']);
+        $this->middleware('roleUser:Pasien')
+            ->only(['showNearestWaitingList', 'getWaitingList', 'getCurrentWaitingListRegist', 'store']);
     }
     /**
      * Display a listing of the resource.
@@ -337,7 +340,7 @@ class WaitingListController extends Controller
         $waiting_list = DB::table('waiting_list_view')
             ->select('residence_number', 'user_id as user_name', 'order_number', 'polyclinic', 'status')
             ->where('health_agency_id', Auth::user()->health_agency_id)
-            ->paginate(10);
+            ->paginate(5);
 
         foreach ($waiting_list as $list){
             $list->user_name = User::where('id', $list->user_name)->first()->name;
@@ -355,6 +358,24 @@ class WaitingListController extends Controller
                 'message' => "Waiting list is empty",
                 'waiting_list' => $waiting_list,
             ], 404);
+        }
+    }
+
+    public function changeStatus(WaitingList $waiting_list, $status){
+        // 1 = Belum Diperiksa, 2 = Sedang Diperiksa, 3 = Sudah Diperiksa, 4 = Dibatalkan
+        $waiting_list->status = PATIENT_STATUS[$status-1];
+        $waiting_list->updated_at = Carbon::now();
+
+        if($waiting_list->save()){
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully process waiting list",
+            ], 200);
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => "Failed process waiting list",
+            ], 500);
         }
     }
 }
