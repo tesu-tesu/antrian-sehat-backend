@@ -5,12 +5,9 @@ namespace App\Http\Controllers;
 use App\HealthAgency;
 use App\Polyclinic;
 use App\PolyMaster;
-use App\WaitingList;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class HealthAgencyController extends Controller
@@ -200,19 +197,6 @@ class HealthAgencyController extends Controller
         }
 
         return response()->json($results, 200);
-    }
-
-    public function showWaitingList(){
-        $waiting_list = DB::table('waiting_lists as wa')
-            ->join('users as us', 'wa.user_id', '=', 'us.id')
-            ->join('schedules as sc', 'wa.schedule_id', '=', 'sc.id')
-            ->join('polyclinics as po', 'sc.polyclinic_id', '=', 'po.id')
-            ->join('poly_masters as pm', 'po.poly_master_id', '=', 'pm.id')
-            ->where('po.health_agency_id', '=', Auth::user()->health_agency_id)
-            ->select('wa.*', 'pm.name as poly_name', 'us.name as user_name', 'us.email')
-            ->get();
-
-        return response()->json($waiting_list);
     }
 
     public function searchHealthAgency(Request $request){

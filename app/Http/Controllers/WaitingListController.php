@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use DB;
-use Auth;
+use App\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\WaitingList;
 use App\Schedule;
 use Carbon\Carbon;
@@ -324,5 +325,16 @@ class WaitingListController extends Controller
                 return "Maaf, puskesmas sudah tutup. Anda hanya bisa mendaftar untuk hari lainnya";
 
         return "";
+    }
+
+    public function adminShowWaitingList(){
+        $waiting_list = DB::table('waiting_list_view')
+            ->select('residence_number', 'user_id as user_name', 'order_number', 'polyclinic', 'status')
+            ->where('health_agency_id', Auth::user()->health_agency_id)
+            ->first();
+
+        $waiting_list->user_name = User::where('id', $waiting_list->user_name)->first()->name;
+
+        return response()->json($waiting_list);
     }
 }
