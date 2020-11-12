@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\HealthAgency;
 use App\PolyMaster;
+use App\Polyclinic;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -12,8 +13,9 @@ use Illuminate\Support\Facades\Validator;
 class PolyMasterController extends Controller
 {
     public function __construct() {
-        $this->middleware('roleUser:Admin')->except(['index','show']);
+        $this->middleware('roleUser:Admin')->except(['index','show', 'showPolymaster']);
         $this->middleware('roleUser:Admin,Super Admin,Pasien')->only(['index','show']);
+        $this->middleware('roleUser:Pasien')->only(['showPolymaster']);
     }
     /**
      * Display a listing of the resource.
@@ -145,5 +147,13 @@ class PolyMasterController extends Controller
                 'message' => 'Delete data failed!',
             ], 500);
         }
+    }
+
+    public function showPolymaster(Polyclinic $polyclinic)
+    {
+        //get polymaster from polyclinic id
+        $polyName = PolyMaster::where('id', $polyclinic->poly_master_id)->first();
+
+        return response()->json($polyName, 200);
     }
 }

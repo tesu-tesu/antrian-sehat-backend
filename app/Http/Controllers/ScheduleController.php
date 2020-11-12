@@ -152,12 +152,19 @@ class ScheduleController extends Controller
         }
     }
 
-    public function showSchedule(PolyMaster $polymaster){
+    public function showScheduleFromPolymaster(PolyMaster $polymaster){
         $schedule = Polyclinic::with(['health_agency' => function($q){
             $q->select('id', 'name')->get();
         },'schedules'])
         ->where('poly_master_id', $polymaster->id)->get();
 
         return response()->json($schedule, 200);
+    }
+
+    public function getScheduleFromPolyclinic(Polyclinic $polyclinic){
+        // $schedules = $polyclinic->schedules;
+        $schedules = Schedule::where('polyclinic_id', $polyclinic->id)->get();
+
+        return response()->json($schedules, 200);
     }
 }
