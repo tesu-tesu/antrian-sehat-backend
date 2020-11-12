@@ -369,10 +369,12 @@ class WaitingListController extends Controller
         $waiting_list->status = PATIENT_STATUS[$status-1];
         $waiting_list->updated_at = Carbon::now();
 
+        $message = ["", "Antrian berhasil di proses", "Antrian berhasil di selesaikan", "Antrian berhasil di batalkan"];
+
         if($waiting_list->save()){
             return response()->json([
                 'success' => true,
-                'message' => "Successfully process waiting list",
+                'message' => $message[$status-1],
             ], 200);
         }else{
             return response()->json([
