@@ -343,6 +343,7 @@ class WaitingListController extends Controller
                 'order_number', 'polyclinic', 'status'
             )
             ->where('health_agency_id', Auth::user()->health_agency_id)
+            ->where('registered_date', date('Y-m-d'))
             ->paginate(5);
 
         foreach ($waiting_list as $list){
