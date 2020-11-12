@@ -335,6 +335,18 @@ class WaitingListController extends Controller
 
         $waiting_list->user_name = User::where('id', $waiting_list->user_name)->first()->name;
 
-        return response()->json($waiting_list);
+        if($waiting_list){
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully get waiting list of health agency",
+                'waiting_list' => $waiting_list,
+            ], 200);
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => "Failed get waiting list of health agency",
+                'waiting_list' => $waiting_list,
+            ], 404);
+        }
     }
 }
