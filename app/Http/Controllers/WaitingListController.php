@@ -102,7 +102,7 @@ class WaitingListController extends Controller
         $waitingList = DB::table('waiting_list_view')
                         ->where('id', $waitingListId)
                         ->first();
-                        
+
         if($waitingListUpdated)
             return response()->json([
                 'success' => true,
@@ -337,7 +337,7 @@ class WaitingListController extends Controller
         $waiting_list = DB::table('waiting_list_view')
             ->select('residence_number', 'user_id as user_name', 'order_number', 'polyclinic', 'status')
             ->where('health_agency_id', Auth::user()->health_agency_id)
-            ->get();
+            ->paginate(10);
 
         foreach ($waiting_list as $list){
             $list->user_name = User::where('id', $list->user_name)->first()->name;
