@@ -369,7 +369,10 @@ class WaitingListController extends Controller
         $waiting_list->status = PATIENT_STATUS[$status-1];
         $waiting_list->updated_at = Carbon::now();
 
-        $message = ["", "Antrian berhasil di proses", "Antrian berhasil di selesaikan", "Antrian berhasil di batalkan"];
+        $message = [
+            "Antrian diterima", "Antrian berhasil di proses",
+            "Antrian berhasil di selesaikan", "Antrian berhasil di batalkan"
+        ];
 
         if($waiting_list->save()){
             return response()->json([
@@ -379,8 +382,28 @@ class WaitingListController extends Controller
         }else{
             return response()->json([
                 'success' => false,
-                'message' => "Failed process waiting list",
-            ], 500);
+                'message' => "Antrian gagal di proses",
+            ], 200);
+        }
+    }
+
+    public function checkPatientQRCode($qr_code){
+        $waiting_list = DB::table('waiting_list_view')
+            ->where('barcode', $qr_code)
+            ->where('status', '=', 'Belum Diperiksa')
+            ->first();
+
+        if($waiting_list){
+            return response()->json([
+                'success' => true,
+                'message' => "Antrian berhasil di terima",
+                'waiting_list' => $waiting_list,
+            ], 200);
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => "Antrian telah di terima sebelumnya",
+            ], 200);
         }
     }
 }
