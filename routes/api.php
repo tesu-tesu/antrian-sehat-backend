@@ -27,16 +27,22 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('user.change-image');
 
         //userRole : Pasien
+        Route::get('polymaster/{polyclinic}/', 'PolyMasterController@showPolymaster')
+            ->name('user.get-polymaster');
         Route::get('polymaster/{healthAgency}/', 'HealthAgencyController@userShowPolymaster')
             ->name('user.show-polymaster');
         Route::get('health-agency/{polymaster}/', 'PolyclinicController@userShowHealthAgency')
             ->name('user.show-health-agency');
         Route::get('get-waiting-list', 'WaitingListController@getWaitingList')
             ->name('user.get-waiting-list');
+        Route::get('get-waiting-list/{schedule}/{date}', 'WaitingListController@getCurrentWaitingListRegist')
+            ->name('user.get-waiting-list-regist');
         Route::get('show-nearest-waiting-list', 'WaitingListController@showNearestWaitingList')
             ->name('user.show-nearest-waiting-list');
-        Route::get('show-schedule/{polymaster}', 'ScheduleController@showSchedule')
-            ->name('user.show-schedule');
+        Route::get('show-schedule/{polymaster}', 'ScheduleController@showScheduleFromPolymaster')
+            ->name('user.show-schedule-from-polymaster');
+        Route::get('show-schedule/{polyclinic}', 'ScheduleController@getScheduleFromPolyclinic')
+            ->name('user.show-schedule-from-polyclinic');
 
         Route::post('search', 'HealthAgencyController@searchHealthAgency')
             ->name('user.search-health-agency');

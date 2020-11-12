@@ -13,8 +13,9 @@ use Illuminate\Support\Facades\Validator;
 class PolyclinicController extends Controller
 {
     public function __construct() {
-        $this->middleware('roleUser:Admin')->except(['show', 'ShowPolyclinicOfHA']);
+        $this->middleware('roleUser:Admin')->except(['show', 'ShowPolyclinicOfHA', 'userShowHealthAgency']);
         $this->middleware('roleUser:Admin,Super Admin,Pasien')->only(['show', 'ShowPolyclinicOfHA']);
+        $this->middleware('roleUser:Pasien')->except(['userShowHealthAgency']);
     }
     /**
      * Display a listing of the resource.
