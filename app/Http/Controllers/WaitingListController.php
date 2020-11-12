@@ -16,8 +16,7 @@ class WaitingListController extends Controller
     public function __construct() {
         $this->middleware('roleUser:Admin')->except(['store', 'show', 'showNearestWaitingList', 'getWaitingList', 'getCurrentWaitingListRegist']);
         $this->middleware('roleUser:Admin,Pasien,Super Admin')->only(['show']);
-        $this->middleware('roleUser:Admin,Pasien')->only(['store']);
-        $this->middleware('roleUser:Pasien')->only(['showNearestWaitingList', 'getWaitingList', 'getCurrentWaitingListRegist']);
+        $this->middleware('roleUser:Pasien')->only(['showNearestWaitingList', 'getWaitingList', 'getCurrentWaitingListRegist', 'store']);
     }
     /**
      * Display a listing of the resource.
@@ -326,9 +325,11 @@ class WaitingListController extends Controller
         $waiting_list = DB::table('waiting_list_view')
             ->select('residence_number', 'user_id as user_name', 'order_number', 'polyclinic', 'status')
             ->where('health_agency_id', Auth::user()->health_agency_id)
-            ->first();
+            ->get();
 
-        $waiting_list->user_name = User::where('id', $waiting_list->user_name)->first()->name;
+        foreach ($waiting_list as $list){
+            $list->user_name = User::where('id', $list->user_name)->first()->name;
+        }
 
         if($waiting_list){
             return response()->json([
@@ -339,7 +340,7 @@ class WaitingListController extends Controller
         }else{
             return response()->json([
                 'success' => false,
-                'message' => "Failed get waiting list of health agency",
+                'message' => "Waiting list is empty",
                 'waiting_list' => $waiting_list,
             ], 404);
         }
