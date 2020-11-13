@@ -14,10 +14,12 @@ use Illuminate\Support\Facades\Validator;
 class WaitingListController extends Controller
 {
     public function __construct() {
-        $this->middleware('roleUser:Admin')->except(['store', 'show', 'showNearestWaitingList', 'getWaitingList', 'getCurrentWaitingListRegist']);
-        $this->middleware('roleUser:Admin,Pasien,Super Admin')->only(['show']);
-        $this->middleware('roleUser:Admin,Pasien')->only(['store']);
-        $this->middleware('roleUser:Pasien')->only(['showNearestWaitingList', 'getWaitingList', 'getCurrentWaitingListRegist']);
+        $this->middleware('roleUser:Admin')
+            ->except(['store', 'show', 'showNearestWaitingList', 'getWaitingList', 'getCurrentWaitingListRegist']);
+        $this->middleware('roleUser:Admin,Pasien,Super Admin')
+            ->only(['show']);
+        $this->middleware('roleUser:Pasien')
+            ->only(['showNearestWaitingList', 'getWaitingList', 'getCurrentWaitingListRegist', 'store']);
     }
     /**
      * Display a listing of the resource.
@@ -338,11 +340,17 @@ class WaitingListController extends Controller
 
     public function adminShowWaitingList(){
         $waiting_list = DB::table('waiting_list_view')
-            ->select('residence_number', 'user_id as user_name', 'order_number', 'polyclinic', 'status')
+            ->select(
+                'id','residence_number', 'user_id as user_name',
+                'order_number', 'polyclinic', 'status'
+            )
             ->where('health_agency_id', Auth::user()->health_agency_id)
-            ->first();
+            ->where('registered_date', date('Y-m-d'))
+            ->paginate(5);
 
-        $waiting_list->user_name = User::where('id', $waiting_list->user_name)->first()->name;
+        foreach ($waiting_list as $list){
+            $list->user_name = User::where('id', $list->user_name)->first()->name;
+        }
 
         if($waiting_list){
             return response()->json([
@@ -353,9 +361,52 @@ class WaitingListController extends Controller
         }else{
             return response()->json([
                 'success' => false,
-                'message' => "Failed get waiting list of health agency",
+                'message' => "Waiting list is empty",
                 'waiting_list' => $waiting_list,
             ], 404);
+        }
+    }
+
+    public function changeStatus(WaitingList $waiting_list, $status){
+        // 1 = Belum Diperiksa, 2 = Sedang Diperiksa, 3 = Sudah Diperiksa, 4 = Dibatalkan
+        $waiting_list->status = PATIENT_STATUS[$status-1];
+        $waiting_list->updated_at = Carbon::now();
+
+        $message = [
+            "Antrian diterima", "Antrian berhasil di proses",
+            "Antrian berhasil di selesaikan", "Antrian berhasil di batalkan"
+        ];
+
+        if($waiting_list->save()){
+            return response()->json([
+                'success' => true,
+                'message' => $message[$status-1],
+            ], 200);
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => "Antrian gagal di proses",
+            ], 200);
+        }
+    }
+
+    public function checkPatientQRCode($qr_code){
+        $waiting_list = DB::table('waiting_list_view')
+            ->where('barcode', $qr_code)
+            ->where('status', '=', 'Belum Diperiksa')
+            ->first();
+
+        if($waiting_list){
+            return response()->json([
+                'success' => true,
+                'message' => "Antrian berhasil di terima",
+                'waiting_list' => $waiting_list,
+            ], 200);
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => "Antrian telah di terima sebelumnya",
+            ], 200);
         }
     }
 }
