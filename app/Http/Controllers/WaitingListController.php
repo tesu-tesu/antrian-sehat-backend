@@ -213,15 +213,16 @@ class WaitingListController extends Controller
         $futureWaitingList = DB::table('waiting_list_view')
                                 ->where('user_id', $userId)
                                 ->where('registered_date', '>', date('Y-m-d'))
+                                ->where('status', 'Belum Diperiksa')
                                 ->get();
 
         $historyWaitingList = DB::table('waiting_list_view')
                                 ->where('user_id', $userId)
+                                ->where('registered_date', '<=', date('Y-m-d'))
                                 ->where(function($q) {
                                     $q->where('status', 'Dibatalkan')
                                       ->orWhere('status', 'Sudah Diperiksa');
                                 })
-                                // ->where('registered_date', '<', date('Y-m-d'))
                                 ->get();
 
         foreach ($historyWaitingList as $history){
@@ -307,15 +308,13 @@ class WaitingListController extends Controller
 
     //melakukan validasi antara jadwal poli dengan tanggal yang diajukan calon pasien
     private function validateScheduleDate(Schedule $schedule, $date) {
-        $timezone = 'Asia/Jakarta';
-        $date = Carbon::parse($date, $timezone);
-        $today = Carbon::today($timezone);
+        $date = Carbon::parse($date);
+        $today = Carbon::today();
 
         $dayOfSchedule = array_search($schedule->day, DAY);
         $dayOfDate = $date->dayOfWeek;
-        $timeClose = Carbon::parse($schedule->time_close, $timezone);
+        $timeClose = Carbon::parse($schedule->time_close);
 
-        // var_dump($today->nowWithSameTz()->format('H:i'));
         //jika antara jadwal dan tanggal memiliki hari yang berbeda
         if($dayOfSchedule != $dayOfDate)
             return "Maaf, tanggal pilihan anda tidak sesuai dengan jadwal di puskesmas";
