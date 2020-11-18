@@ -66,13 +66,22 @@ class AuthController extends Controller
 //        return response()->json(compact('user','token'),201);
 
         $token = auth()->attempt($validator->validated());
-        return response()->json([
-            'message' => 'User successfully registered',
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => $user
-        ], 201);
+
+        if($user){
+            return response()->json([
+                'success' => true,
+                'message' => 'User successfully registered',
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => auth()->factory()->getTTL() * 60,
+                'user' => $user
+            ], 200);
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'User failed registered',
+            ], 200);
+        }
     }
 
 
