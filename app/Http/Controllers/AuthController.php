@@ -114,6 +114,8 @@ class AuthController extends Controller
      */
     protected function createNewToken($token){
         return response()->json([
+            'success' => true,
+            'message' => "You're logged in",
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
