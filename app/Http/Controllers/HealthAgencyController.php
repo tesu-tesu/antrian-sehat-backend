@@ -24,7 +24,18 @@ class HealthAgencyController extends Controller
     public function index()
     {
         $healthAgencies = HealthAgency::paginate(8);
-        return response()->json($healthAgencies, 200);
+        if($healthAgencies)
+            return response()->json([
+                'success' => true,
+                'message' => 'Get data success',
+                'data' => $healthAgencies,
+            ], 200);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => 'Get data failed',
+                'data' => $healthAgencies,
+            ], 200);
     }
 
     /**
