@@ -25,7 +25,18 @@ class PolyMasterController extends Controller
     public function index()
     {
         $polymasters = PolyMaster::paginate(8);
-        return response()->json($polymasters, 200);
+        if($polymasters)
+            return response()->json([
+                'success' => true,
+                'message' => 'Get data success',
+                'data' => $polymasters,
+            ], 200);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => 'Get data failed',
+                'data' => $polymasters,
+            ], 200);
     }
 
     /**
