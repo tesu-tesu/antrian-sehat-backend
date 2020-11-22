@@ -225,21 +225,13 @@ class WaitingListController extends Controller
                                 })
                                 ->get();
 
-        foreach ($historyWaitingList as $history){
-            $history->registered_date = Carbon::parse($history->registered_date)->format('j F Y');
-        }
-        foreach ($currentWaitingList as $current){
-            $current->registered_date = Carbon::parse($current->registered_date)->format('j F Y');
-        }
-        foreach ($futureWaitingList as $future){
-            $future->registered_date = Carbon::parse($future->registered_date)->format('j F Y');
-        }
-
         return response()->json([
             'success' => true,
-            'currentWaitingList' => $currentWaitingList,
-            'historyWaitingList' => $historyWaitingList,
-            'futureWaitingList' => $futureWaitingList,
+            'waitingList' => [
+                'currentWaitingList' => $currentWaitingList, 
+                'futureWaitingList' => $futureWaitingList, 
+                'historyWaitingList' => $historyWaitingList,
+            ],
         ], 200);
     }
 
