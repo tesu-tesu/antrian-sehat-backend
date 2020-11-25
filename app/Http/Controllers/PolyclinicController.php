@@ -168,44 +168,47 @@ class PolyclinicController extends Controller
         return response()->json($results, 200);
     }
 
-    public function ShowPolyclinicOfHA(HealthAgency $healthAgency){
-        $schedules = Polyclinic::with(['poly_master' => function($q){
-            $q->select('id', 'name')->get();
-        },'schedules'])
-            ->where('health_agency_id', $healthAgency->id)->get();
+    public function ShowPolyclinicOfHA($healthAgency){
+        $listDay = ['M', 'S', 'S', 'R', 'K', 'J', 'S'];
+        $schedules = Polyclinic::with(
+            'health_agency:id,name,address',
+            'poly_master:id,name',
+            'schedules'
+        )->where('health_agency_id', $healthAgency)->get();
 
-        foreach($schedules as $row) {
-            foreach($row["schedules"] as $schedule) {
-                $day = Schedule::where('id', $schedule->id)->first()->day;
-                $dayId = array_search($day, DAY);
-                $dayId = ($dayId)%7;
-                $today = Carbon::now()->dayOfWeek;
-                $add = $dayId - $today;
-                if($add < 0){ //jika selisih negatif brrti ganti date ke mingdep
-                    $add += 7;
+        if($schedules != "[]"){
+            foreach($schedules as $row) {
+                foreach($row["schedules"] as $schedule) {
+                    $day = Schedule::where('id', $schedule->id)->first()->day;
+                    $dayId = array_search($day, DAY);
+                    $dayId = ($dayId)%7;
+                    $today = Carbon::now()->dayOfWeek;
+                    $add = $dayId - $today;
+                    if($add < 0){ //jika selisih negatif brrti ganti date ke mingdep
+                        $add += 7;
+                    }
+                    $schedule["day"] = $dayId;
+                    $schedule["charOfDay"] = $listDay[$dayId];
+                    $schedule["date"] = (Carbon::now()->addDays($add)->toDateString());
                 }
-                $schedule["day"] = $dayId;
-                $schedule["date"] = (Carbon::now()->addDays($add)->toDateString());
+                //sorting based on index day
+                $collection = collect($row["schedules"]);
+                $sorted = $collection->sortBy('day');
+                $row["sorted"] = $sorted->values()->all();
+
             }
-            //sorting based on index day
-            $collection = collect($row["schedules"]);
-            $sorted = $collection->sortBy('day');
-            $row["sorted"] = $sorted->values()->all();
 
-        }
-
-        if($schedules)
             return response()->json([
                 'success' => true,
                 'message' => 'Get data success',
                 'data' => $schedules,
             ], 200);
-        else
+        }else{
             return response()->json([
                 'success' => false,
-                'message' => 'Get data failed',
-                'data' => $schedules,
+                'message' => 'Data not found',
             ], 200);
+        }
     }
 
 
