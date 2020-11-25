@@ -194,7 +194,18 @@ class PolyclinicController extends Controller
 
         }
 
-        return response()->json($schedules, 200);
+        if($schedules)
+            return response()->json([
+                'success' => true,
+                'message' => 'Get data success',
+                'data' => $schedules,
+            ], 200);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => 'Get data failed',
+                'data' => $schedules,
+            ], 200);
     }
 
 
