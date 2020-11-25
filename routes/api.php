@@ -27,11 +27,9 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('user.change-image');
 
         //userRole : Pasien
-        Route::get('polymaster/{polyclinic}/', 'PolyMasterController@showPolymaster')
+        Route::get('polymaster/{polyclinic}/', 'PolyMasterController@getPolymasterOfPolyclinic')
             ->name('user.get-polymaster');
-        Route::get('polymaster/{healthAgency}/', 'HealthAgencyController@userShowPolymaster')
-            ->name('user.show-polymaster');
-        Route::get('health-agency/{polymaster}/', 'PolyclinicController@userShowHealthAgency')
+        Route::get('health-agency/{polymaster}/', 'HealthAgencyController@getHAOfPolymaster')
             ->name('user.show-health-agency');
         Route::get('get-waiting-list', 'WaitingListController@getWaitingList')
             ->name('user.get-waiting-list');
@@ -39,9 +37,9 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('user.get-waiting-list-regist');
         Route::get('show-nearest-waiting-list', 'WaitingListController@showNearestWaitingList')
             ->name('user.show-nearest-waiting-list');
-        Route::get('show-schedule/{polymaster}', 'ScheduleController@showScheduleFromPolymaster')
+        Route::get('show-schedule/{polymaster}', 'ScheduleController@getScheduleOfPolymaster')
             ->name('user.show-schedule-from-polymaster');
-        Route::get('show-schedule/{polyclinic}', 'ScheduleController@getScheduleFromPolyclinic')
+        Route::get('show-schedule/{polyclinic}', 'ScheduleController@getScheduleOfPolyclinic')
             ->name('user.show-schedule-from-polyclinic');
 
         Route::post('search', 'HealthAgencyController@searchHealthAgency')
@@ -55,9 +53,9 @@ Route::group(['middleware' => ['auth:api']], function () {
     //userRole : Admin
     Route::group(['prefix'=>'admin'], function (){
         Route::group(['prefix' => 'health-agency', 'as' => 'health-agency.'], function (){
-            Route::get('{healthAgency}/polyclinic', 'PolyclinicController@ShowPolyclinicOfHA')
+            Route::get('{healthAgency}/polyclinic', 'PolyclinicController@getPolyclinicOfHA')
                 ->name('show-polyclinic');
-            Route::get('waiting-list', 'WaitingListController@adminShowWaitingList')
+            Route::get('waiting-list', 'WaitingListController@getAdminWaitingList')
                 ->name('show-waiting-list');
             Route::post('change-status/{waiting_list}/{status}', 'WaitingListController@changeStatus')
                 ->name('change-status');

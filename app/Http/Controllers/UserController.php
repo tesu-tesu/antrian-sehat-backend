@@ -12,9 +12,7 @@ use Illuminate\Support\Facades\Storage;
 class UserController extends Controller
 {
    public function __construct() {
-      $this->middleware('roleUser:Admin,Super Admin')->only(['show']);
-      $this->middleware('roleUser:Super Admin')->only(['store', 'update', 'destroy']);
-      $this->middleware('roleUser:Pasien')->only(['changePassword', 'changeImage', 'getResidenceNumber']);
+       $this->middleware('roleUser:Admin,Super Admin')->only(['show']);
    }
     /**
      * Display a listing of the resource.
@@ -67,11 +65,17 @@ class UserController extends Controller
             'password' => bcrypt($request->password)
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'new User has successfully created',
-            'user' => $user
-        ], 200);
+        if($user)
+            return response()->json([
+                'success' => true,
+                'message' => 'User has successfully created',
+                'data' => $user
+            ], 200);
+        else
+            return response()->json([
+                'success' => true,
+                'message' => 'User has failed created',
+            ], 200);
     }
 
     /**
@@ -126,16 +130,19 @@ class UserController extends Controller
                 'password' => bcrypt($request->password)
             ]);
 
+        $newUser = User::where('id', $user->id)->first();
+
         if ($updated)
             return response()->json([
                 'success' => true,
-                'message' => 'User data updated successfully!'
+                'message' => 'User data updated successfully!',
+                'data' => $newUser
             ], 200);
         else
             return response()->json([
                 'success' => false,
                 'message' => 'User data can not be updated'
-            ], 500);
+            ], 200);
     }
 
     public function changePassword(Request $request, User $user)
@@ -163,7 +170,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Password data can not be updated'
-            ], 500);
+            ], 200);
     }
 
     public function changeImage(Request $request, User $user)
@@ -196,7 +203,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Profile image can not be updated'
-            ], 500);
+            ], 200);
     }
 
     /**
@@ -210,12 +217,12 @@ class UserController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'User has successfully deleted'
-            ]);
+            ],200);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'User can not be deleted'
-            ], 500);
+            ], 200);
         }
     }
 
@@ -226,13 +233,13 @@ class UserController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Success get the residence number',
-                'residence_number' => $user,
+                'data' => $user,
             ], 200);
         } else {
             return response()->json([
-                'success' => true,
+                'success' => false,
                 'message' => 'User doesn\'t have residence number',
-                'residence_number' => 0,
+                'data' => 0,
             ], 200);
         }
     }

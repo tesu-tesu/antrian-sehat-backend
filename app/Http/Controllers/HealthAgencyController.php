@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\Validator;
 class HealthAgencyController extends Controller
 {
     public function __construct() {
-        $this->middleware('roleUser:Admin')->except(['index','show','adminShowPolyclinic']);
-        $this->middleware('roleUser:Admin,Super Admin,Pasien')->only(['index','show','adminShowPolyclinic']);
+        $this->middleware('roleUser:Super Admin')->only(['store']);
+        $this->middleware('roleUser:Admin,Super Admin')->only(['update', 'destroy']);
     }
     /**
      * Display a listing of the resource.
@@ -27,14 +27,13 @@ class HealthAgencyController extends Controller
         if($healthAgencies)
             return response()->json([
                 'success' => true,
-                'message' => 'Get data success',
+                'message' => 'Get data successfully!',
                 'data' => $healthAgencies,
             ], 200);
         else
             return response()->json([
                 'success' => false,
-                'message' => 'Get data failed',
-                'data' => $healthAgencies,
+                'message' => 'Get data failed!',
             ], 200);
     }
 
@@ -88,14 +87,13 @@ class HealthAgencyController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Add data successfully!',
-                'user' => $health_agency,
+                'data' => $health_agency,
             ], 200);
         else
             return response()->json([
                 'success' => false,
                 'message' => 'Add data failed!',
-                'user' => $health_agency,
-            ], 500);
+            ], 200);
     }
 
     /**
@@ -106,7 +104,7 @@ class HealthAgencyController extends Controller
      */
     public function show(HealthAgency $healthAgency)
     {
-        return response()->json($healthAgency, 200);
+        //
     }
 
     /**
@@ -165,14 +163,14 @@ class HealthAgencyController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Update data successfully!',
-                'user' => $health_agency,
+                'data' => $health_agency,
             ], 200);
         else
             return response()->json([
                 'success' => false,
                 'message' => 'Update data failed!',
-                'user' => $health_agency,
-            ], 500);
+                'data' => $health_agency,
+            ], 200);
     }
 
     /**
@@ -189,25 +187,13 @@ class HealthAgencyController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Delete data successfully!',
-            ]);
+            ], 200);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'Delete data failed!',
-            ], 500);
+            ], 200);
         }
-    }
-
-    public function userShowPolymaster(HealthAgency $healthAgency){
-        $puskesmas = Polyclinic::where('health_agency_id', $healthAgency->id)
-            ->with('poly_master')->get();
-
-        $results = [];
-        foreach ($puskesmas as $row) {
-            $results[] = $row;
-        }
-
-        return response()->json($results, 200);
     }
 
     public function searchHealthAgency(Request $request){
@@ -231,6 +217,29 @@ class HealthAgencyController extends Controller
             $results = null;
         }
 
-        return response()->json($results);
+        return response()->json($results, 200);
+    }
+
+    public function getHAOfPolymaster(PolyMaster $polymaster){
+        $data = Polyclinic::where('poly_master_id', $polymaster->id)
+            ->with('health_agency')->get();
+
+        $results = [];
+        foreach ($data as $row) {
+            $results[] = $row->health_agency;
+        }
+
+        if($data){
+            return response()->json([
+                'success' => true,
+                'message' => 'Get dat successfully!',
+                'data' => $results
+            ]);
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'Get dat failed!',
+            ]);
+        }
     }
 }

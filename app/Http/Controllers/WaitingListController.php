@@ -14,12 +14,9 @@ use Illuminate\Support\Facades\Validator;
 class WaitingListController extends Controller
 {
     public function __construct() {
-        $this->middleware('roleUser:Admin')
-            ->except(['store', 'show', 'showNearestWaitingList', 'getWaitingList', 'getCurrentWaitingListRegist']);
-        $this->middleware('roleUser:Admin,Pasien,Super Admin')
-            ->only(['show']);
-        $this->middleware('roleUser:Pasien')
-            ->only(['showNearestWaitingList', 'getWaitingList', 'getCurrentWaitingListRegist', 'store']);
+        $this->middleware('roleUser:Admin')->only(['getAdminWaitingList', 'changeStatus', 'checkPatientQRCode']);
+        $this->middleware('roleUser:Pasien')->only(['store']);
+        $this->middleware('roleUser:Admin,Pasien')->only(['update', 'destroy']);
     }
     /**
      * Display a listing of the resource.
@@ -59,12 +56,17 @@ class WaitingListController extends Controller
             return response()->json($validator->errors(), 400);
         }
         //validate date and schedule
-        $message = $this->validateScheduleDate(Schedule::find($request->schedule), $request->registered_date);
+        $schedule = Schedule::where('id', $request->schedule)->first();
+        if($schedule)
+            $message = $this->validateScheduleDate($schedule, $request->registered_date);
+        else
+            $message = "Jadwal tidak terdaftar!";
+
         if($message != "")
             return response()->json([
                 'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
 
         $ordered = WaitingList::select('id')
             ->where('residence_number', $request->residence_number)
@@ -76,7 +78,7 @@ class WaitingListController extends Controller
             return response()->json($validator->errors([
                 'success' => false,
                 'message' => "Anda sudah mendaftar di jadwal ini dengan NIK yang sama",
-            ]), 400);
+            ]), 200);
 
         $latestOrder = WaitingList::select('order_number')
             ->where('registered_date', $request->registered_date)
@@ -110,14 +112,13 @@ class WaitingListController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Sukses mendaftar antrian!',
-                'waiting_list' => $waitingList,
+                'data' => $waitingList,
             ], 200);
         else
             return response()->json([
                 'success' => false,
                 'message' => 'Add data failed!',
-                'waiting_list' => $waitingList,
-            ], 500);
+            ], 200);
     }
 
     /**
@@ -128,7 +129,7 @@ class WaitingListController extends Controller
      */
     public function show(WaitingList $waitingList)
     {
-        return response()->json($waitingList, 200);
+        //
     }
 
     /**
@@ -160,22 +161,24 @@ class WaitingListController extends Controller
         }
 
         $updated = WaitingList::where('id', $waitingList->id)
-                            ->update([
-                                'status' => $request->status,
-                            ]);
+            ->update([
+                'status' => $request->status,
+            ]);
+
+        $waiting_list = WaitingList::where('id', $waitingList->id)->first();
 
         if($updated)
             return response()->json([
                 'success' => true,
-                'message' => 'Waiting list\'s status has been successfully updated!',
-                'waiting_list' => $updated,
+                'message' => 'Update data successfully!',
+                'data' => $waiting_list,
             ], 200);
         else
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update waiting list\'s status',
-                'waiting_list' => $updated,
-            ], 500);
+                'message' => 'Update data failed!',
+                'data' => $waiting_list,
+            ], 200);
     }
 
     /**
@@ -186,20 +189,21 @@ class WaitingListController extends Controller
      */
     public function destroy(WaitingList $waitingList)
     {
-        if ($waitingList->delete()) {
+        if ($waitingList->delete())
             return response()->json([
                 'success' => true,
-                'message' => 'Waiting list has successfully deleted'
-            ]);
-        } else {
+                'message' => 'Delete data successfully!'
+            ], 200);
+        else
             return response()->json([
                 'success' => false,
-                'message' => 'Waiting list can not be deleted'
-            ], 500);
-        }
+                'message' => 'Delete data failed!'
+            ], 200);
     }
 
-    //mengambil data semua antrian yang dimiliki pasien (yang lalu, hari ini, atau hari berikutnya)
+    /**
+     * @notes : mengambil data semua antrian yang dimiliki pasien (yang lalu, hari ini, atau hari berikutnya)
+     */
     public function getWaitingList() {
         $userId = Auth::id();
         date_default_timezone_set ('Asia/Jakarta');
@@ -228,14 +232,16 @@ class WaitingListController extends Controller
         return response()->json([
             'success' => true,
             'waitingList' => [
-                'currentWaitingList' => $currentWaitingList, 
-                'futureWaitingList' => $futureWaitingList, 
+                'currentWaitingList' => $currentWaitingList,
+                'futureWaitingList' => $futureWaitingList,
                 'historyWaitingList' => $historyWaitingList,
             ],
         ], 200);
     }
 
-    //mengambil antrian terdekat dari antrian yang dimiliki pasien (ditampilkan di home)
+    /**
+     * @notes : mengambil antrian terdekat dari antrian yang dimiliki pasien (ditampilkan di home)
+     */
     public function showNearestWaitingList() {
         $userId = Auth::id();
 
@@ -248,30 +254,29 @@ class WaitingListController extends Controller
                     ->orWhere('status', 'Sedang Diperiksa');
             })->first();
 
-        if($waitingList) {
-            $message = "Successfully get nearest waiting list";
-            $error = true;
-        }
-        else {
-            $message = "You don\'t have any nearest waiting list";
-            $error = false;
-        }
-
-        return response()->json([
-            'success' => $error,
-            'message' => $message,
-            'waiting_list' => $waitingList,
-        ], 200);
+        if($waitingList)
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully get nearest waiting list",
+                'data' => $waitingList,
+            ], 200);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => "You don\'t have any nearest waiting list",
+            ], 200);
     }
 
-    //mengambil data jumlah antrian saat ini untuk poli terkait pada tanggal terkait
+    /**
+     * @notes : mengambil data jumlah antrian saat ini untuk poli terkait pada tanggal terkait
+     */
     public function getCurrentWaitingListRegist(Schedule $schedule, $date){
         $message = $this->validateScheduleDate($schedule, $date);
         if($message != "")
             return response()->json([
                 'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
 
         $currentWaitingList = DB::table('waiting_list_view')
             ->select('current_number', 'latest_number', 'health_agency', 'polyclinic', 'day')
@@ -294,11 +299,13 @@ class WaitingListController extends Controller
         return response()->json([
             'success' => true,
             'message' => "Get the current and latest number in specific schedule and date",
-            'waiting_list' => $currentWaitingList,
+            'data' => $currentWaitingList,
         ], 200);
     }
 
-    //melakukan validasi antara jadwal poli dengan tanggal yang diajukan calon pasien
+    /**
+     * @notes : melakukan validasi antara jadwal poli dengan tanggal yang diajukan calon pasien
+     */
     private function validateScheduleDate(Schedule $schedule, $date) {
         $date = Carbon::parse($date);
         $today = Carbon::today();
@@ -312,11 +319,9 @@ class WaitingListController extends Controller
             return "Maaf, tanggal pilihan anda tidak sesuai dengan jadwal di puskesmas";
 
         //jika mencoba mendaftar untuk hari yang lalu
-        if($date < $today)
-            return "Maaf, anda hanya bisa mendaftar untuk satu minggu ke depan";
-
+        //atau
         //jika tanggal pendaftaran lebih dari seminggu dari hari ini
-        if($today->floatDiffInDays($date, false) > 7)
+        if($date < $today || $today->floatDiffInDays($date, false) > 7)
             return "Maaf, anda hanya bisa mendaftar untuk satu minggu ke depan";
 
         //jika hari ini dan waktu sekarang 30 menit sebelum puskesmas tutup
@@ -327,7 +332,7 @@ class WaitingListController extends Controller
         return "";
     }
 
-    public function adminShowWaitingList(){
+    public function getAdminWaitingList(){
         $waiting_list = DB::table('waiting_list_view')
             ->select(
                 'id','residence_number', 'user_id as user_name',
@@ -345,19 +350,21 @@ class WaitingListController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => "Successfully get waiting list of health agency",
-                'waiting_list' => $waiting_list,
+                'data' => $waiting_list,
             ], 200);
         }else{
             return response()->json([
                 'success' => false,
                 'message' => "Waiting list is empty",
-                'waiting_list' => $waiting_list,
-            ], 404);
+            ], 200);
         }
     }
 
     public function changeStatus(WaitingList $waiting_list, $status){
-        // 1 = Belum Diperiksa, 2 = Sedang Diperiksa, 3 = Sudah Diperiksa, 4 = Dibatalkan
+        /**
+         * @notes : 1 = Belum Diperiksa, 2 = Sedang Diperiksa, 3 = Sudah Diperiksa, 4 = Dibatalkan
+         */
+
         $waiting_list->status = PATIENT_STATUS[$status-1];
         $waiting_list->updated_at = Carbon::now();
 
@@ -366,17 +373,16 @@ class WaitingListController extends Controller
             "Antrian berhasil di selesaikan", "Antrian berhasil di batalkan"
         ];
 
-        if($waiting_list->save()){
+        if($waiting_list->save())
             return response()->json([
                 'success' => true,
                 'message' => $message[$status-1],
             ], 200);
-        }else{
+        else
             return response()->json([
                 'success' => false,
                 'message' => "Antrian gagal di proses",
             ], 200);
-        }
     }
 
     public function checkPatientQRCode($qr_code){
@@ -385,17 +391,16 @@ class WaitingListController extends Controller
             ->where('status', '=', 'Belum Diperiksa')
             ->first();
 
-        if($waiting_list){
+        if($waiting_list)
             return response()->json([
                 'success' => true,
                 'message' => "Antrian berhasil di terima",
-                'waiting_list' => $waiting_list,
+                'data' => $waiting_list,
             ], 200);
-        }else{
+        else
             return response()->json([
                 'success' => false,
                 'message' => "Antrian telah di terima sebelumnya",
             ], 200);
-        }
     }
 }
