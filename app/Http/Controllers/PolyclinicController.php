@@ -165,7 +165,19 @@ class PolyclinicController extends Controller
             $results[] = $row->health_agency;
         }
 
-        return response()->json($results, 200);
+        if($data){
+            return response()->json([
+                'success' => true,
+                'message' => 'Get dat successfully!',
+                'data' => $results
+            ]);
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'Get dat failed!',
+            ]);
+        }
+
     }
 
     public function ShowPolyclinicOfHA($healthAgency){
