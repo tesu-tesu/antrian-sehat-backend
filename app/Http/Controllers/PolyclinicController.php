@@ -13,9 +13,7 @@ use Illuminate\Support\Facades\Validator;
 class PolyclinicController extends Controller
 {
     public function __construct() {
-        $this->middleware('roleUser:Admin')->except(['show', 'ShowPolyclinicOfHA', 'userShowHealthAgency']);
-        $this->middleware('roleUser:Admin,Super Admin,Pasien')->only(['show', 'ShowPolyclinicOfHA']);
-        $this->middleware('roleUser:Pasien')->except(['userShowHealthAgency']);
+        $this->middleware('roleUser:Admin')->only(['store', 'update', 'destroy']);
     }
     /**
      * Display a listing of the resource.
@@ -63,14 +61,13 @@ class PolyclinicController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Add data successfully!',
-                'polyclinic' => $polyclinic,
+                'data' => $polyclinic,
             ], 200);
         else
             return response()->json([
                 'success' => false,
                 'message' => 'Add data failed!',
-                'polyclinic' => $polyclinic,
-            ], 500);
+            ], 200);
     }
 
     /**
@@ -81,7 +78,7 @@ class PolyclinicController extends Controller
      */
     public function show(Polyclinic $polyclinic)
     {
-        return response()->json($polyclinic, 200);
+        //
     }
 
     /**
@@ -115,24 +112,24 @@ class PolyclinicController extends Controller
 
         $isUpdate = Polyclinic::where('id', $polyclinic->id)->first()
             ->update([
-            'poly_master_id' => $request->poly_master_id,
-            'health_agency_id' => $request->health_agency_id,
+                'poly_master_id' => $request->poly_master_id,
+                'health_agency_id' => $request->health_agency_id,
             ]);
 
-        $polyclinic = Polyclinic::where('id', $polyclinic->id)->first();
+        $newPolyclinic = Polyclinic::where('id', $polyclinic->id)->first();
 
         if($isUpdate)
             return response()->json([
                 'success' => true,
                 'message' => 'Update data successfully!',
-                'polyclinic' => $polyclinic,
+                'data' => $newPolyclinic,
             ], 200);
         else
             return response()->json([
                 'success' => false,
                 'message' => 'Update data failed!',
-                'polyclinic' => $polyclinic,
-            ], 500);
+                'data' => $newPolyclinic,
+            ], 200);
     }
 
     /**
@@ -147,40 +144,16 @@ class PolyclinicController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Delete data successfully!',
-            ]);
+            ], 200);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'Delete data failed!',
-            ], 500);
+            ], 200);
         }
     }
 
-    public function userShowHealthAgency(PolyMaster $polymaster){
-        $data = Polyclinic::where('poly_master_id', $polymaster->id)
-            ->with('health_agency')->get();
-
-        $results = [];
-        foreach ($data as $row) {
-            $results[] = $row->health_agency;
-        }
-
-        if($data){
-            return response()->json([
-                'success' => true,
-                'message' => 'Get dat successfully!',
-                'data' => $results
-            ]);
-        }else{
-            return response()->json([
-                'success' => false,
-                'message' => 'Get dat failed!',
-            ]);
-        }
-
-    }
-
-    public function ShowPolyclinicOfHA($healthAgency){
+    public function getPolyclinicOfHA($healthAgency){
         $listDay = ['M', 'S', 'S', 'R', 'K', 'J', 'S'];
         $schedules = Polyclinic::with(
             'health_agency:id,name,address',
@@ -222,6 +195,4 @@ class PolyclinicController extends Controller
             ], 200);
         }
     }
-
-
 }

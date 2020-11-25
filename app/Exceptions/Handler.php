@@ -50,6 +50,12 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        if ($exception instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
+            return response()->json([
+                "success" => false,
+                "message" => "Data not found!",
+            ], 200);
+        }
         return parent::render($request, $exception);
     }
 }

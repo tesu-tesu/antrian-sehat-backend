@@ -13,9 +13,7 @@ use Illuminate\Support\Facades\Validator;
 class PolyMasterController extends Controller
 {
     public function __construct() {
-        $this->middleware('roleUser:Admin')->except(['index','show', 'showPolymaster']);
-        $this->middleware('roleUser:Admin,Super Admin,Pasien')->only(['index','show']);
-        $this->middleware('roleUser:Pasien')->only(['showPolymaster']);
+        $this->middleware('roleUser:Super Admin')->only(['store', 'update', 'destroy']);
     }
     /**
      * Display a listing of the resource.
@@ -35,7 +33,6 @@ class PolyMasterController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Get data failed',
-                'data' => $polymasters,
             ], 200);
     }
 
@@ -71,12 +68,11 @@ class PolyMasterController extends Controller
         return $poly_master ? \response()->json([
             'success' => true,
             'message' => 'Add data successfully!',
-            'user' => $poly_master,
+            'data' => $poly_master,
         ], 200) : response()->json([
             'success' => false,
             'message' => 'Add data failed!',
-            'user' => $poly_master,
-        ], 500);
+        ], 200);
     }
 
     /**
@@ -87,7 +83,7 @@ class PolyMasterController extends Controller
      */
     public function show(PolyMaster $polyMaster)
     {
-        return response()->json($polyMaster, 200);
+        //
     }
 
     /**
@@ -129,14 +125,14 @@ class PolyMasterController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Update data successfully!',
-                'user' => $poly_master,
+                'data' => $poly_master,
             ], 200);
         else
             return response()->json([
                 'success' => false,
                 'message' => 'Update data failed!',
-                'user' => $poly_master,
-            ], 500);
+                'data' => $poly_master,
+            ], 200);
     }
 
     /**
@@ -156,15 +152,24 @@ class PolyMasterController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Delete data failed!',
-            ], 500);
+            ], 200);
         }
     }
 
-    public function showPolymaster(Polyclinic $polyclinic)
+    public function getPolymasterOfPolyclinic(Polyclinic $polyclinic)
     {
-        //get polymaster from polyclinic id
         $polyName = PolyMaster::where('id', $polyclinic->poly_master_id)->first();
 
-        return response()->json($polyName, 200);
+        if($polyName)
+            return response()->json([
+                'success' => true,
+                'message' => 'Get data successfully!',
+                'data' => $polyName
+            ]);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => 'Get data failed!',
+            ]);
     }
 }

@@ -11,8 +11,7 @@ use App\Polyclinic;
 class ScheduleController extends Controller
 {
     public function __construct() {
-        $this->middleware('roleUser:Admin')->except(['show']);
-        $this->middleware('roleUser:Admin,Super Admin,Pasien')->only(['show']);
+        $this->middleware('roleUser:Admin')->only(['store', 'update', 'destroy']);
     }
     /**
      * Display a listing of the resource.
@@ -60,10 +59,17 @@ class ScheduleController extends Controller
             'polyclinic_id' => $request->polyclinic
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'New Schedule has successfully created',
-        ],200);
+        if($schedule)
+            return response()->json([
+                'success' => true,
+                'message' => 'Add data successfully!',
+                'data' => $schedule
+            ],200);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => 'Add data failed!',
+            ],200);
     }
 
     /**
@@ -74,7 +80,7 @@ class ScheduleController extends Controller
      */
     public function show(Schedule $schedule)
     {
-        return response()->json($schedule, 200);
+        //
     }
 
     /**
@@ -108,24 +114,28 @@ class ScheduleController extends Controller
             return response()->json($validator->errors()->toJson(),400);
         }
 
-        $updated = Schedule::where('id', $schedule->id)
-        ->update([
-            'day' => $request->day,
-            'time_open' => $request->time_open,
-            'time_close' => $request->time_close,
-            'polyclinic_id' => $request->polyclinic
-        ]);
+        $isUpdate = Schedule::where('id', $schedule->id)
+            ->update([
+                'day' => $request->day,
+                'time_open' => $request->time_open,
+                'time_close' => $request->time_close,
+                'polyclinic_id' => $request->polyclinic
+            ]);
 
-        if ($updated) {
+        $newSchedule = Schedule::where('id', $schedule->id)->first();
+
+        if ($isUpdate) {
             return response()->json([
                 'success' => true,
-                'message' => 'Schedule data updated succesfully'
+                'message' => 'Update data successfully!',
+                'data' => $newSchedule
             ],200);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Schedule data cannot be updated'
-            ],500);
+                'message' => 'Update data failed!',
+                'data' => $newSchedule,
+            ],200);
         }
     }
 
@@ -137,34 +147,51 @@ class ScheduleController extends Controller
      */
     public function destroy(Schedule $schedule)
     {
-        $data = Schedule::find($schedule->id);
-
-        if ($data->delete()) {
+        if ($schedule->delete()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Schedule successfully deleted'
-            ]);
+                'message' => 'Delete data successfully!'
+            ], 200);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Schedule cannot be deleted'
-            ], 500);
+                'message' => 'Delete data failed!'
+            ], 200);
         }
     }
 
-    public function showScheduleFromPolymaster(PolyMaster $polymaster){
+    public function getScheduleOfPolymaster(PolyMaster $polymaster){
         $schedule = Polyclinic::with(['health_agency' => function($q){
             $q->select('id', 'name')->get();
         },'schedules'])
         ->where('poly_master_id', $polymaster->id)->get();
 
-        return response()->json($schedule, 200);
+        if($schedule)
+            return response()->json([
+                'success' => true,
+                'message' => 'Get data successfully!',
+                'data' => $schedule
+            ]);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => 'Get data failed!',
+            ]);
     }
 
-    public function getScheduleFromPolyclinic(Polyclinic $polyclinic){
-        // $schedules = $polyclinic->schedules;
+    public function getScheduleOfPolyclinic(Polyclinic $polyclinic){
         $schedules = Schedule::where('polyclinic_id', $polyclinic->id)->get();
 
-        return response()->json($schedules, 200);
+        if($schedules)
+            return response()->json([
+                'success' => true,
+                'message' => 'Get data successfully!',
+                'data' => $schedules
+            ]);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => 'Get data failed!',
+            ]);
     }
 }
