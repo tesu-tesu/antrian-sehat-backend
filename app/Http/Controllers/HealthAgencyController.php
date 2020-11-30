@@ -8,11 +8,13 @@ use App\PolyMaster;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
 class HealthAgencyController extends Controller
 {
-    public function __construct() {
+    public function __construct()
+    {
         $this->middleware('roleUser:Super Admin')->only(['store']);
         $this->middleware('roleUser:Admin,Super Admin')->only(['update', 'destroy']);
     }
@@ -24,7 +26,7 @@ class HealthAgencyController extends Controller
     public function index()
     {
         $healthAgencies = HealthAgency::paginate(8);
-        if($healthAgencies)
+        if ($healthAgencies)
             return response()->json([
                 'success' => true,
                 'message' => 'Get data successfully!',
@@ -63,15 +65,15 @@ class HealthAgencyController extends Controller
             'email' => 'required|email|unique:health_agencies',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
 
         //Checking File
         $uploadFile = $request->file('image');
-        if($uploadFile){
+        if ($uploadFile) {
             $path = $uploadFile->store('public/img/health_agencies');
-        }else{
+        } else {
             $path = null;
         }
 
@@ -83,7 +85,7 @@ class HealthAgencyController extends Controller
             'email' => $request->email,
         ]);
 
-        if($health_agency)
+        if ($health_agency)
             return response()->json([
                 'success' => true,
                 'message' => 'Add data successfully!',
@@ -132,17 +134,17 @@ class HealthAgencyController extends Controller
             'address' => 'required|string',
             'image' => 'image|mimes:jpeg,png,jpg|max:2048',
             'call_center' => 'required',
-            'email' => 'required|email|unique:health_agencies,email,'.$healthAgency->id,
+            'email' => 'required|email|unique:health_agencies,email,' . $healthAgency->id,
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
 
         //Checking File
         $uploadFile = $request->file('image');
-        if($uploadFile!=null){
-            \File::delete(storage_path('app/').$healthAgency->image);
+        if ($uploadFile != null) {
+            File::delete(storage_path('app/') . $healthAgency->image);
             $path = $uploadFile->store('public/img/health_agencies');
         } else {
             $path = $healthAgency->image;
@@ -159,7 +161,7 @@ class HealthAgencyController extends Controller
 
         $health_agency = HealthAgency::where('id', $healthAgency->id)->first();
 
-        if($isUpdate)
+        if ($isUpdate)
             return response()->json([
                 'success' => true,
                 'message' => 'Update data successfully!',
@@ -181,7 +183,7 @@ class HealthAgencyController extends Controller
      */
     public function destroy(HealthAgency $healthAgency)
     {
-        \File::delete(storage_path('app/').$healthAgency->image);
+        File::delete(storage_path('app/') . $healthAgency->image);
 
         if ($healthAgency->delete()) {
             return response()->json([
@@ -196,11 +198,12 @@ class HealthAgencyController extends Controller
         }
     }
 
-    public function searchHealthAgency(Request $request){
+    public function searchHealthAgency(Request $request)
+    {
         $search = $request->q;
-        if ($search != null){
-            $query1 = HealthAgency::where('name', 'like', '%' .$search. '%')->get();
-            $query2 = PolyMaster::where('name', 'like', '%' .$search. '%')
+        if ($search != null) {
+            $query1 = HealthAgency::where('name', 'like', '%' . $search . '%')->get();
+            $query2 = PolyMaster::where('name', 'like', '%' . $search . '%')
                 ->with('polyclinics', 'polyclinics.health_agency')->get();
 
             foreach ($query1 as $item) {
@@ -208,19 +211,20 @@ class HealthAgencyController extends Controller
             }
             foreach ($query2 as $polymaster) {
                 foreach ($polymaster->polyclinics as $polyclinic) {
-                    if (!in_array($polyclinic->health_agency, $results)){
+                    if (!in_array($polyclinic->health_agency, $results)) {
                         $results[] = $polyclinic->health_agency;
                     }
                 }
             }
-        }else{
+        } else {
             $results = null;
         }
 
         return response()->json($results, 200);
     }
 
-    public function getHAOfPolymaster(PolyMaster $polymaster){
+    public function getHAOfPolymaster(PolyMaster $polymaster)
+    {
         $data = Polyclinic::where('poly_master_id', $polymaster->id)
             ->with('health_agency')->get();
 
@@ -229,13 +233,13 @@ class HealthAgencyController extends Controller
             $results[] = $row->health_agency;
         }
 
-        if($data){
+        if ($data) {
             return response()->json([
                 'success' => true,
                 'message' => 'Get dat successfully!',
                 'data' => $results
             ]);
-        }else{
+        } else {
             return response()->json([
                 'success' => false,
                 'message' => 'Get dat failed!',
