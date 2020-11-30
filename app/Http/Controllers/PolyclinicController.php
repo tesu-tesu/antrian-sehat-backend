@@ -152,47 +152,4 @@ class PolyclinicController extends Controller
             ], 200);
         }
     }
-
-    public function getPolyclinicOfHA($healthAgency){
-        $listDay = ['M', 'S', 'S', 'R', 'K', 'J', 'S'];
-        $schedules = Polyclinic::with(
-            'health_agency:id,name,address',
-            'poly_master:id,name',
-            'schedules'
-        )->where('health_agency_id', $healthAgency)->get();
-
-        if($schedules != "[]"){
-            foreach($schedules as $row) {
-                foreach($row["schedules"] as $schedule) {
-                    $day = Schedule::where('id', $schedule->id)->first()->day;
-                    $dayId = array_search($day, DAY);
-                    $dayId = ($dayId)%7;
-                    $today = Carbon::now()->dayOfWeek;
-                    $add = $dayId - $today;
-                    if($add < 0){ //jika selisih negatif brrti ganti date ke mingdep
-                        $add += 7;
-                    }
-                    $schedule["day"] = $dayId;
-                    $schedule["charOfDay"] = $listDay[$dayId];
-                    $schedule["date"] = (Carbon::now()->addDays($add)->toDateString());
-                }
-                //sorting based on index day
-                $collection = collect($row["schedules"]);
-                $sorted = $collection->sortBy('day');
-                $row["sorted"] = $sorted->values()->all();
-
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Get data success',
-                'data' => $schedules,
-            ], 200);
-        }else{
-            return response()->json([
-                'success' => false,
-                'message' => 'Data not found',
-            ], 200);
-        }
-    }
 }

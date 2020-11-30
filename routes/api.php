@@ -39,8 +39,8 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('user.show-nearest-waiting-list');
         Route::get('show-schedule/{polymaster}', 'ScheduleController@getScheduleOfPolymaster')
             ->name('user.show-schedule-from-polymaster');
-        Route::get('show-schedule/{polyclinic}', 'ScheduleController@getScheduleOfPolyclinic')
-            ->name('user.show-schedule-from-polyclinic');
+//        Route::get('show-schedule/{polyclinic}', 'ScheduleController@getScheduleOfPolyclinic')
+//            ->name('user.show-schedule-from-polyclinic');
 
         Route::post('search', 'HealthAgencyController@searchHealthAgency')
             ->name('user.search-health-agency');
@@ -53,7 +53,7 @@ Route::group(['middleware' => ['auth:api']], function () {
     //userRole : Admin
     Route::group(['prefix'=>'admin'], function (){
         Route::group(['prefix' => 'health-agency', 'as' => 'health-agency.'], function (){
-            Route::get('{healthAgency}/polyclinic', 'PolyclinicController@getPolyclinicOfHA')
+            Route::get('{healthAgency}/polyclinic', 'ScheduleController@getSchedulePolyclinicOfHA')
                 ->name('show-polyclinic');
             Route::get('waiting-list', 'WaitingListController@getAdminWaitingList')
                 ->name('show-waiting-list');
