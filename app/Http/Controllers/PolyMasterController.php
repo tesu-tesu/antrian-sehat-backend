@@ -174,7 +174,7 @@ class PolyMasterController extends Controller
     }
 
 	public function getAllPolyMaster(){
-	$polymasters = PolyMaster::all();
+	    $polymasters = PolyMaster::all();
         if($polymasters)
             return response()->json([
                 'success' => true,

@@ -246,4 +246,19 @@ class HealthAgencyController extends Controller
             ]);
         }
     }
+
+    public function getAllHealthAgency(){
+        $healthAgency = HealthAgency::all();
+        if($healthAgency)
+            return response()->json([
+                'success' => true,
+                'message' => 'Get data success',
+                'data' => $healthAgency,
+            ], 200);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => 'Get data failed',
+            ], 200);
+    }
 }

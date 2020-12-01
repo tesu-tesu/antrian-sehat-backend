@@ -61,11 +61,14 @@ Route::group(['middleware' => ['auth:api']], function () {
                 ->name('change-status');
             Route::post('check-patient-qrcode/{qr_code}', 'WaitingListController@checkPatientQRCode')
                 ->name('check-patient-qrcode');
+            Route::get('/all', 'HealthAgencyController@getAllHealthAgency')
+                ->name('all-health-agency');
         });
-	Route::group(['prefix' => 'poly-master', 'as' => 'poly-master.'], function(){
-		Route::get('/all', 'PolyMasterController@getAllPolyMaster')
+	    Route::group(['prefix' => 'poly-master', 'as' => 'poly-master.'], function(){
+    		Route::get('/all', 'PolyMasterController@getAllPolyMaster')
 		->name('all-poly-master');
-	});
+	    });
+
         Route::resource('health-agency', 'HealthAgencyController');
         Route::resource('poly-master', 'PolyMasterController');
         Route::resource('schedule', 'ScheduleController');
