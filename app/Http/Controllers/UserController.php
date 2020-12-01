@@ -13,6 +13,7 @@ class UserController extends Controller
 {
    public function __construct() {
        $this->middleware('roleUser:Admin,Super Admin')->only(['show']);
+       $this->middleware('roleUser:Super Admin')->only(['getAdminUser']);
    }
     /**
      * Display a listing of the resource.
@@ -22,6 +23,16 @@ class UserController extends Controller
     public function index()
     {
         //
+    }
+
+    public function getAdminUser(){
+        $admins = User::where('role', "Admin")->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data user admin selected',
+            'data' => $admins
+        ], 200);
     }
 
     /**

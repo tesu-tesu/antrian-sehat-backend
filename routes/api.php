@@ -71,6 +71,9 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::resource('schedule', 'ScheduleController');
         Route::resource('polyclinic', 'PolyclinicController');
         Route::resource('waiting-list', 'WaitingListController');
+
+        Route::get('get-admin-user', 'UserController@getAdminUser')
+            ->name('admin.get-admin-user');
     });
 
     Route::resource('user', 'UserController');
