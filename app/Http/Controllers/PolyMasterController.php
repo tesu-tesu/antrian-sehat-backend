@@ -172,4 +172,19 @@ class PolyMasterController extends Controller
                 'message' => 'Get data failed!',
             ]);
     }
+
+	public function getAllPolyMaster(){
+	$polymasters = PolyMaster::all();
+        if($polymasters)
+            return response()->json([
+                'success' => true,
+                'message' => 'Get data success',
+                'data' => $polymasters,
+            ], 200);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => 'Get data failed',
+            ], 200);
+	}
 }
