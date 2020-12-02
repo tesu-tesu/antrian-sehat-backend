@@ -26,7 +26,7 @@ class UserController extends Controller
     }
 
     public function getAdminUser(){
-        $admins = User::where('role', "Admin")->get();
+        $admins = User::where('role', "Admin")->with('health_agency')->get();
 
         return response()->json([
             'success' => true,
@@ -76,6 +76,7 @@ class UserController extends Controller
             'password' => bcrypt($request->password)
         ]);
 
+        $user = User::where('id', $user->id)->with('health_agency')->first();
         if($user)
             return response()->json([
                 'success' => true,
@@ -96,6 +97,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        $user = User::where('id', $user->id)->with('health_agency')->first();
         return response()->json($user, 200);
     }
 
@@ -141,7 +143,7 @@ class UserController extends Controller
                 'password' => bcrypt($request->password)
             ]);
 
-        $newUser = User::where('id', $user->id)->first();
+        $newUser = User::where('id', $user->id)->with('health_agency')->first();
 
         if ($updated)
             return response()->json([
