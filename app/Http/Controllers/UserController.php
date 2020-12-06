@@ -113,8 +113,6 @@ class UserController extends Controller
                 'success' => true,
                 'message' => 'Data has failed to be selected',
             ], 200);
-
-        return response()->json($user, 200);
     }
 
     /**
