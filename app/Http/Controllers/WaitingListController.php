@@ -58,7 +58,7 @@ class WaitingListController extends Controller
         //validate date and schedule
         $schedule = Schedule::where('id', $request->schedule)->first();
         if($schedule)
-            $message = $this->validateScheduleDate($schedule, $request->registered_date);
+            $message = $this->validateScheduleDate($schedule->id, $request->registered_date);
         else
             $message = "Jadwal tidak terdaftar!";
 
@@ -66,7 +66,7 @@ class WaitingListController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $message,
-            ], 200);
+            ], 400);
 
         $ordered = WaitingList::select('id')
             ->where('residence_number', $request->residence_number)
@@ -74,11 +74,11 @@ class WaitingListController extends Controller
             ->where('registered_date', $request->registered_date)
             ->first();
 
-        if($ordered != null)
-            return response()->json($validator->errors([
+        if($ordered)
+            return response()->json([
                 'success' => false,
                 'message' => "Anda sudah mendaftar di jadwal ini dengan NIK yang sama",
-            ]), 200);
+            ], 400);
 
         $latestOrder = WaitingList::select('order_number')
             ->where('registered_date', $request->registered_date)
@@ -118,7 +118,7 @@ class WaitingListController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Add data failed!',
-            ], 200);
+            ], 400);
     }
 
     /**
@@ -270,13 +270,15 @@ class WaitingListController extends Controller
     /**
      * @notes : mengambil data jumlah antrian saat ini untuk poli terkait pada tanggal terkait
      */
-    public function getCurrentWaitingListRegist(Schedule $schedule, $date){
-        $message = $this->validateScheduleDate($schedule, $date);
+    public function getCurrentWaitingListRegist($scheduleId, $date){
+        $message = $this->validateScheduleDate($scheduleId, $date);
         if($message != "")
             return response()->json([
                 'success' => false,
                 'message' => $message,
-            ], 200);
+            ], 400);
+        
+        $schedule = Schedule::find($scheduleId);
 
         $currentWaitingList = DB::table('waiting_list_view')
             ->select('current_number', 'latest_number', 'health_agency', 'polyclinic', 'day')
@@ -285,11 +287,10 @@ class WaitingListController extends Controller
             ->first();
 
         if(!$currentWaitingList) {
-            $schedule = Schedule::find($schedule->id);
             $poly = $schedule->polyclinic;
             $currentWaitingList = new WaitingList();
-            $currentWaitingList->current_number = 0;
-            $currentWaitingList->latest_number = 0;
+            $currentWaitingList->current_number = '-';
+            $currentWaitingList->latest_number = '-';
             $currentWaitingList->health_agency = $poly->health_agency->name;
             $currentWaitingList->polyclinic = $poly->poly_master->name;
             $currentWaitingList->day = $schedule->day;
@@ -306,9 +307,13 @@ class WaitingListController extends Controller
     /**
      * @notes : melakukan validasi antara jadwal poli dengan tanggal yang diajukan calon pasien
      */
-    private function validateScheduleDate(Schedule $schedule, $date) {
+    private function validateScheduleDate($scheduleId, $date) {
         $date = Carbon::parse($date);
         $today = Carbon::today();
+
+        $schedule = Schedule::find($scheduleId);
+        if(!$schedule)
+            return "Maaf, jadwal yang anda masukkan tidak valid";
 
         $dayOfSchedule = array_search($schedule->day, DAY);
         $dayOfDate = $date->dayOfWeek;
