@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Rules\MatchOldPassword;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
+use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
@@ -26,6 +27,20 @@ class UserController extends Controller
     public function index()
     {
         //
+    }
+
+    public function getSelf()
+    {
+        if (auth()->user()->role == 'Admin') // atau  FacadesAuth::id()
+            $user = User::with('health_agency')->find(auth()->user()->id);
+        else
+            $user = User::find(auth()->user()->id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data user selected',
+            'data' => $user
+        ], 200);
     }
 
     public function getAdminUser()

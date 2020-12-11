@@ -80,6 +80,9 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('admin.get-admin-user');
     });
 
+    Route::get('user/get-current-user', 'UserController@getSelf')
+        ->name('user.get-current-user');
+
     Route::resource('user', 'UserController');
 });
 
