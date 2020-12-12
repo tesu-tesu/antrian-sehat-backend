@@ -9,7 +9,8 @@ use Tymon\JWTAuth\JWTAuth;
 
 class AuthController extends Controller
 {
-    public function __construct() {
+    public function __construct()
+    {
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
@@ -18,7 +19,8 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string',
@@ -28,7 +30,7 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        if (! $token = auth()->attempt($validator->validated())) {
+        if (!$token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'username or email incorrect!'], 401);
         }
 
@@ -40,7 +42,8 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function register(Request $request) {
+    public function register(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:3,150',
             'email' => 'required|string|email|unique:users|max:100',
@@ -50,8 +53,8 @@ class AuthController extends Controller
             'role' => 'required|string'
         ]);
 
-        if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
         }
 
         $user = User::create([
@@ -62,12 +65,12 @@ class AuthController extends Controller
             'password' => bcrypt($request->password)
         ]);
 
-//        $token = JWTAuth::fromUser($user);
-//        return response()->json(compact('user','token'),201);
+        //        $token = JWTAuth::fromUser($user);
+        //        return response()->json(compact('user','token'),201);
 
         $token = auth()->attempt($validator->validated());
 
-        if($user){
+        if ($user) {
             return response()->json([
                 'success' => true,
                 'message' => 'User successfully registered',
@@ -76,7 +79,7 @@ class AuthController extends Controller
                 'expires_in' => auth()->factory()->getTTL() * 60,
                 'user' => $user
             ], 200);
-        }else{
+        } else {
             return response()->json([
                 'success' => false,
                 'message' => 'User failed registered',
@@ -90,7 +93,8 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function logout() {
+    public function logout()
+    {
         auth()->logout();
 
         return response()->json(['message' => 'User successfully signed out']);
@@ -101,7 +105,8 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function refresh() {
+    public function refresh()
+    {
         return $this->createNewToken(auth()->refresh());
     }
 
@@ -112,7 +117,8 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function createNewToken($token){
+    protected function createNewToken($token)
+    {
         return response()->json([
             'success' => true,
             'message' => "You're logged in",
