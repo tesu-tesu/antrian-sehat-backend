@@ -82,7 +82,7 @@ class UserController extends Controller
             'health_agency' => 'nullable|numeric'
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
+            return response()->json($validator->errors(), 400);
         }
 
         $user = User::create([
@@ -157,7 +157,7 @@ class UserController extends Controller
             'health_agency' => 'nullable|numeric'
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
+            return response()->json($validator->errors(), 400);
         }
 
         $updated = User::where('id', $user->id)
@@ -193,7 +193,7 @@ class UserController extends Controller
             'confirm' => ['same:new'],
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
+            return response()->json($validator->errors(), 400);
         }
 
         $updated = User::where('id', $user->id)
@@ -219,7 +219,7 @@ class UserController extends Controller
             'image' => 'image|mimes:jpeg,png,jpg|max:2000',
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
+            return response()->json($validator->errors(), 400);
         }
 
         $uploadFile = $request->file('image');
