@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   app:
-    image: yanuadin/app-antrian-sehat:1.0
+    image: yanuadin/app-antrian-sehat:1.2
     container_name: antrian_sehat-app
     restart: unless-stopped
     working_dir: /var/www/
