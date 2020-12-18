@@ -13,14 +13,15 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
 Route::group(['middleware' => ['auth:api']], function () {
-    Route::group(['prefix'=>'auth','as'=>'auth.'], function (){
+    Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
         Route::post('logout', 'AuthController@logout')->name('logout');
         Route::post('refresh', 'AuthController@refresh')->name('refresh');
     });
 
     //User
-    Route::group(['prefix'=>'user'], function (){
+    Route::group(['prefix' => 'user'], function () {
         Route::post('change-password/{user}', 'UserController@changePassword')
             ->name('user.change-password');
         Route::post('change-image/{user}', 'UserController@changeImage')
@@ -39,8 +40,8 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('user.show-nearest-waiting-list');
         Route::get('show-schedule/{polymaster}', 'ScheduleController@getScheduleOfPolymaster')
             ->name('user.show-schedule-from-polymaster');
-//        Route::get('show-schedule/{polyclinic}', 'ScheduleController@getScheduleOfPolyclinic')
-//            ->name('user.show-schedule-from-polyclinic');
+        //        Route::get('show-schedule/{polyclinic}', 'ScheduleController@getScheduleOfPolyclinic')
+        //            ->name('user.show-schedule-from-polyclinic');
 
         Route::post('search', 'HealthAgencyController@searchHealthAgency')
             ->name('user.search-health-agency');
@@ -51,11 +52,11 @@ Route::group(['middleware' => ['auth:api']], function () {
     });
 
     //userRole : Admin
-    Route::group(['prefix'=>'admin'], function (){
-        Route::group(['prefix' => 'health-agency', 'as' => 'health-agency.'], function (){
+    Route::group(['prefix' => 'admin'], function () {
+        Route::group(['prefix' => 'health-agency', 'as' => 'health-agency.'], function () {
             Route::get('{healthAgency}/polyclinic', 'ScheduleController@getSchedulePolyclinicOfHA')
                 ->name('show-polyclinic');
-            Route::get('waiting-list', 'WaitingListController@getAdminWaitingList')
+            Route::get('admin-waiting-list', 'WaitingListController@getAdminWaitingList')
                 ->name('show-waiting-list');
             Route::post('change-status/{waiting_list}/{status}', 'WaitingListController@changeStatus')
                 ->name('change-status');
@@ -64,10 +65,10 @@ Route::group(['middleware' => ['auth:api']], function () {
             Route::get('/all', 'HealthAgencyController@getAllHealthAgency')
                 ->name('all-health-agency');
         });
-	    Route::group(['prefix' => 'poly-master', 'as' => 'poly-master.'], function(){
-    		Route::get('/all', 'PolyMasterController@getAllPolyMaster')
-		->name('all-poly-master');
-	    });
+        Route::group(['prefix' => 'poly-master', 'as' => 'poly-master.'], function () {
+            Route::get('/all', 'PolyMasterController@getAllPolyMaster')
+                ->name('all-poly-master');
+        });
 
         Route::resource('health-agency', 'HealthAgencyController');
         Route::resource('poly-master', 'PolyMasterController');
@@ -79,10 +80,13 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('admin.get-admin-user');
     });
 
+    Route::get('user/get-current-user', 'UserController@getSelf')
+        ->name('user.get-current-user');
+
     Route::resource('user', 'UserController');
 });
 
-Route::group(['prefix'=>'auth','as'=>'auth.'], function (){
+Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
     Route::post('register', 'AuthController@register')->name('register');
     Route::post('login', 'AuthController@login')->name('login');
 });

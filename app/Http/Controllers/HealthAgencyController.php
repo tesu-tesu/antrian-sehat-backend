@@ -106,7 +106,17 @@ class HealthAgencyController extends Controller
      */
     public function show(HealthAgency $healthAgency)
     {
-        //
+        if ($healthAgency)
+            return response()->json([
+                'success' => true,
+                'message' => 'Data is selected',
+                'data' => $healthAgency
+            ], 200);
+        else
+            return response()->json([
+                'success' => true,
+                'message' => 'Data has failed to be selected',
+            ], 200);
     }
 
     /**
@@ -247,9 +257,10 @@ class HealthAgencyController extends Controller
         }
     }
 
-    public function getAllHealthAgency(){
+    public function getAllHealthAgency()
+    {
         $healthAgency = HealthAgency::all();
-        if($healthAgency)
+        if ($healthAgency)
             return response()->json([
                 'success' => true,
                 'message' => 'Get data success',

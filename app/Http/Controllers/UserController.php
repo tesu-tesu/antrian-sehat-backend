@@ -7,14 +7,18 @@ use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Rules\MatchOldPassword;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
+use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
-   public function __construct() {
-       $this->middleware('roleUser:Admin,Super Admin')->only(['show']);
-       $this->middleware('roleUser:Super Admin')->only(['getAdminUser']);
-   }
+    public function __construct()
+    {
+        $this->middleware('roleUser:Admin,Super Admin')->only(['show']);
+        $this->middleware('roleUser:Super Admin')->only(['getAdminUser']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -25,7 +29,22 @@ class UserController extends Controller
         //
     }
 
-    public function getAdminUser(){
+    public function getSelf()
+    {
+        if (auth()->user()->role == 'Admin') // atau  FacadesAuth::id()
+            $user = User::with('health_agency')->find(auth()->user()->id);
+        else
+            $user = User::find(auth()->user()->id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data user selected',
+            'data' => $user
+        ], 200);
+    }
+
+    public function getAdminUser()
+    {
         $admins = User::where('role', "Admin")->with('health_agency')->get();
 
         return response()->json([
@@ -62,8 +81,8 @@ class UserController extends Controller
             'residence_number' => 'nullable|numeric|unique:users|digits:16',
             'health_agency' => 'nullable|numeric'
         ]);
-        if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
         }
 
         $user = User::create([
@@ -77,7 +96,7 @@ class UserController extends Controller
         ]);
 
         $user = User::where('id', $user->id)->with('health_agency')->first();
-        if($user)
+        if ($user)
             return response()->json([
                 'success' => true,
                 'message' => 'User has successfully created',
@@ -98,7 +117,17 @@ class UserController extends Controller
     public function show(User $user)
     {
         $user = User::where('id', $user->id)->with('health_agency')->first();
-        return response()->json($user, 200);
+        if ($user)
+            return response()->json([
+                'success' => true,
+                'message' => 'Data is selected',
+                'data' => $user
+            ], 200);
+        else
+            return response()->json([
+                'success' => true,
+                'message' => 'Data has failed to be selected',
+            ], 200);
     }
 
     /**
@@ -121,15 +150,14 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:3,150',
-            'email' => 'required|string|email|unique:users,email,' .$user->id. '|max:100',
-            'password' => 'required|string|min:6',
+            'email' => 'required|string|email|unique:users,email,' . $user->id . '|max:100',
             'phone' => 'required|numeric|digits_between:8,13',
             'role' => 'required|string',
-            'residence_number' => 'nullable|numeric|unique:users,residence_number,' .$user->id. '|digits:16',
+            'residence_number' => 'nullable|numeric|unique:users,residence_number,' . $user->id . '|digits:16',
             'health_agency' => 'nullable|numeric'
         ]);
-        if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
         }
 
         $updated = User::where('id', $user->id)
@@ -139,8 +167,7 @@ class UserController extends Controller
                 'phone' => $request->phone,
                 'role' => $request->role,
                 'residence_number' => $request->residence_number,
-                'health_agency_id' => $request->health_agency,
-                'password' => bcrypt($request->password)
+                'health_agency_id' => $request->health_agency
             ]);
 
         $newUser = User::where('id', $user->id)->with('health_agency')->first();
@@ -165,8 +192,8 @@ class UserController extends Controller
             'new' => ['required', 'string', 'max:255'],
             'confirm' => ['same:new'],
         ]);
-        if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
         }
 
         $updated = User::where('id', $user->id)
@@ -191,13 +218,13 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'image' => 'image|mimes:jpeg,png,jpg|max:2000',
         ]);
-        if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
         }
 
         $uploadFile = $request->file('image');
-        if($uploadFile!=null){
-            \File::delete(storage_path('app/').$user->profile_img);
+        if ($uploadFile != null) {
+            File::delete(storage_path('app/') . $user->profile_img);
             $path = $uploadFile->store('public/img/users');
         } else {
             $path = $user->image;
@@ -230,7 +257,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'User has successfully deleted'
-            ],200);
+            ], 200);
         } else {
             return response()->json([
                 'success' => false,
@@ -239,10 +266,11 @@ class UserController extends Controller
         }
     }
 
-    public function getResidenceNumber() {
-        $user = Auth::user()->residence_number;
+    public function getResidenceNumber()
+    {
+        $user = FacadesAuth::user()->residence_number;
 
-        if($user != null) {
+        if ($user != null) {
             return response()->json([
                 'success' => true,
                 'message' => 'Success get the residence number',
