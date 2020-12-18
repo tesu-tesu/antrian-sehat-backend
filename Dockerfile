@@ -1,8 +1,7 @@
 FROM php:7.4-fpm
 
-# Arguments defined in docker-compose.yml
-ARG user
-ARG uid
+# Set working directory
+WORKDIR /var/www
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -12,7 +11,8 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     zip \
-    unzip
+    unzip \
+    nano
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -26,11 +26,13 @@ COPY . /var/www
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Create system user to run Composer and Artisan Commands
-RUN mkdir -p /home/$user/.composer && \
-    chown -R $user:$user /home/$user
+# Change permission var/www directory
+RUN chown -R www-data:www-data /var/www/storage* && \
+	chmod -R 775 /var/www/storage/*
 
-# Set working directory
-WORKDIR /var/www
+# Prepare project antrian-sehat
+RUN composer install \
+	&& php artisan key:generate \
+	&& php artisan storage:link
 
 USER $user
