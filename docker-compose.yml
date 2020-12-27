@@ -11,7 +11,7 @@ services:
       - antrian_sehat
 
   frontend:
-    image: app-antrian-sehat-frontend:1.0
+    image: yanuadin/app-antrian-sehat-frontend:1.0
     working_dir: /var/www/antrian-sehat-frontend
     restart: unless-stopped
     ports:
