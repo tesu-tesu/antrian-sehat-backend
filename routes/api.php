@@ -49,6 +49,8 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('user.get-waiting-list-by-schedule');
         Route::get('get-residence-number/', 'UserController@getResidenceNumber')
             ->name('user.get-residence-number');
+        Route::get('get-booked-residence-number', 'UserController@getBookedResidenceNumber')
+            ->name('user.get-booked-residence-number');
     });
 
     //userRole : Admin
