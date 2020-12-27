@@ -34,9 +34,15 @@ class UserController extends Controller
     {
         if (auth()->user()->role == 'Admin') // atau  FacadesAuth::id()
             $user = User::with('health_agency')->find(auth()->user()->id);
-        else
+        else if(auth()->user()->role == 'Pasien'){
             $user = User::find(auth()->user()->id);
-            
+            $user->totalWaitingList = DB::table('waiting_list_view')
+                    ->where('user_id', auth()->user()->id)
+                    ->count();
+        } else {
+            $user = User::find(auth()->user()->id);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Data user selected',
