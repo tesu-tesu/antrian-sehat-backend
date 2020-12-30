@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use App\WaitingList;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -33,8 +35,13 @@ class UserController extends Controller
     {
         if (auth()->user()->role == 'Admin') // atau  FacadesAuth::id()
             $user = User::with('health_agency')->find(auth()->user()->id);
-        else
+        else if (auth()->user()->role == 'Pasien') {
             $user = User::find(auth()->user()->id);
+            $user->totalWaitingList = WaitingList::where('user_id', auth()->user()->id)
+                ->count();
+        } else {
+            $user = User::find(auth()->user()->id);
+        }
 
         return response()->json([
             'success' => true,
@@ -281,6 +288,27 @@ class UserController extends Controller
                 'success' => false,
                 'message' => 'User doesn\'t have residence number',
                 'data' => 0,
+            ], 200);
+        }
+    }
+
+    public function getBookedRegisterNumber()
+    {
+        $residenceNumbers = DB::table('waiting_list_view')
+            ->where('user_id', FacadesAuth::id())
+            ->distinct()
+            ->get();
+
+        if ($residenceNumbers != null) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Berhasil mendapat NIK yang pernah didaftar',
+                'data' => $residenceNumbers,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda belum pernah mendaftar',
             ], 200);
         }
     }
