@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use App\WaitingList;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -34,11 +35,10 @@ class UserController extends Controller
     {
         if (auth()->user()->role == 'Admin') // atau  FacadesAuth::id()
             $user = User::with('health_agency')->find(auth()->user()->id);
-        else if(auth()->user()->role == 'Pasien'){
+        else if (auth()->user()->role == 'Pasien') {
             $user = User::find(auth()->user()->id);
-            $user->totalWaitingList = DB::table('waiting_list_view')
-                    ->where('user_id', auth()->user()->id)
-                    ->count();
+            $user->totalWaitingList = WaitingList::where('user_id', auth()->user()->id)
+                ->count();
         } else {
             $user = User::find(auth()->user()->id);
         }
@@ -292,9 +292,10 @@ class UserController extends Controller
         }
     }
 
-    public function getBookedRegisterNumber(){
+    public function getBookedRegisterNumber()
+    {
         $residenceNumbers = DB::table('waiting_list_view')
-            ->where('user_id', Auth::id())
+            ->where('user_id', FacadesAuth::id())
             ->distinct()
             ->get();
 
