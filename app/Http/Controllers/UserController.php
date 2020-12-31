@@ -292,18 +292,22 @@ class UserController extends Controller
         }
     }
 
-    public function getBookedRegisterNumber()
-    {
-        $residenceNumbers = DB::table('waiting_list_view')
-            ->where('user_id', FacadesAuth::id())
+    public function getBookedResidenceNumber(){
+        $residenceNumbers = WaitingList::select('residence_number')
+            ->where('user_id', Auth::id())
             ->distinct()
             ->get();
+
+        $residenceNumberArray = array();
+        foreach($residenceNumbers as &$item) {
+            array_push($residenceNumberArray, $item->residence_number);
+        }
 
         if ($residenceNumbers != null) {
             return response()->json([
                 'success' => true,
                 'message' => 'Berhasil mendapat NIK yang pernah didaftar',
-                'data' => $residenceNumbers,
+                'data' => $residenceNumberArray,
             ], 200);
         } else {
             return response()->json([

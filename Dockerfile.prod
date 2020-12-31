@@ -1,0 +1,60 @@
+FROM composer:2 as vendor
+
+# Set working directory
+WORKDIR /var/www/antrian-sehat-backend
+
+# Copy project files to default php-fpm www location
+COPY . /var/www/antrian-sehat-backend
+
+# Get latest Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+RUN composer install \
+    --ignore-platform-reqs \
+    --no-interaction \
+    --no-plugins \
+    --no-progress \
+    --no-dev \
+    --no-scripts \
+    --prefer-dist \
+    && find /var/www/antrian-sehat-backend -type d -exec chmod -R 555 {} \; \
+    && find /var/www/antrian-sehat-backend -type f -exec chmod -R 444 {} \; \
+    && find /var/www/antrian-sehat-backend/storage -type d -exec chmod -R 755 {} \; \
+    && find /var/www/antrian-sehat-backend/storage -type f -exec chmod -R 644 {} \;
+
+RUN composer dump-autoload
+
+FROM existenz/webstack:7.3
+
+EXPOSE 80
+EXPOSE 443
+
+COPY --from=vendor --chown=php:nginx /var/www/antrian-sehat-backend /www
+
+# https://github.com/docker-library/php/issues/240
+RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing gnu-libiconv
+ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
+
+RUN apk -U --no-cache add \
+    php-bcmath \
+    php-cli \
+    php-ctype \
+    php-curl \
+    php-dom \
+    php-fileinfo \
+    php-gd \
+    php-iconv \
+    php-intl \
+    php-json \
+    php-mbstring \
+    php-openssl \
+    php-opcache \
+    php-pdo_mysql \
+    php-phar \
+    php-session \
+    php-simplexml \
+    php-tokenizer \
+    php-xml \
+    php-xmlreader \
+    php-xmlwriter \
+    php-zip
