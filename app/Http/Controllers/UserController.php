@@ -292,14 +292,15 @@ class UserController extends Controller
         }
     }
 
-    public function getBookedResidenceNumber(){
+    public function getBookedResidenceNumber()
+    {
         $residenceNumbers = WaitingList::select('residence_number')
-            ->where('user_id', Auth::id())
+            ->where('user_id', FacadesAuth::id())
             ->distinct()
             ->get();
 
         $residenceNumberArray = array();
-        foreach($residenceNumbers as &$item) {
+        foreach ($residenceNumbers as &$item) {
             array_push($residenceNumberArray, $item->residence_number);
         }
 
