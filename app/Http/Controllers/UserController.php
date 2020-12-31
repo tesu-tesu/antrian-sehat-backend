@@ -189,7 +189,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'User data can not be updated'
-            ], 200);
+            ], 400);
     }
 
     public function changePassword(Request $request, User $user)
@@ -217,7 +217,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Password data can not be updated'
-            ], 200);
+            ], 400);
     }
 
     public function changeImage(Request $request, User $user)
@@ -250,7 +250,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Profile image can not be updated'
-            ], 200);
+            ], 400);
     }
 
     /**
@@ -269,7 +269,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'User can not be deleted'
-            ], 200);
+            ], 400);
         }
     }
 
@@ -309,7 +309,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Anda belum pernah mendaftar',
-            ], 200);
+            ], 400);
         }
     }
 }
