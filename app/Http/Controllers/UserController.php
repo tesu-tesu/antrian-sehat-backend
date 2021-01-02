@@ -6,6 +6,7 @@ use App\User;
 use App\WaitingList;
 use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 use App\Rules\MatchOldPassword;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
@@ -42,6 +43,7 @@ class UserController extends Controller
         } else {
             $user = User::find(auth()->user()->id);
         }
+        $user->imagePath = $this->getImagePath($user->profile_img);
 
         return response()->json([
             'success' => true,
@@ -223,7 +225,7 @@ class UserController extends Controller
     public function changeImage(Request $request, User $user)
     {
         $validator = Validator::make($request->all(), [
-            'image' => 'image|mimes:jpeg,png,jpg|max:2000',
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2000',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
@@ -231,14 +233,16 @@ class UserController extends Controller
 
         $uploadFile = $request->file('image');
         if ($uploadFile != null) {
-            File::delete(storage_path('app/') . $user->profile_img);
+            File::delete(storage_path('app/public/img/users/') . $user->profile_img);
             $path = $uploadFile->store('public/img/users');
         } else {
-            $path = $user->image;
+            $path = $user->profile_img;
         }
+
+        $fileName = explode('/', $path);
         $updated = User::where('id', $user->id)
             ->update([
-                'profile_img' => $path
+                'profile_img' => end($fileName)
             ]);
 
         if ($updated)
@@ -251,6 +255,17 @@ class UserController extends Controller
                 'success' => false,
                 'message' => 'Profile image can not be updated'
             ], 400);
+    }
+
+    private function getImagePath($filename) {
+        $path = storage_path('app/public/img/users/'. $filename);
+        
+        if (!File::exists($path)) {
+            abort(404);
+        }
+        $stringPath = Storage::url('public/img/users/'.$filename);
+
+        return $stringPath;
     }
 
     /**
