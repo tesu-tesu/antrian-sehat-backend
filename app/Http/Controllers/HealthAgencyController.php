@@ -160,7 +160,7 @@ class HealthAgencyController extends Controller
             $path = $healthAgency->image;
         }
 
-        $isUpdate = HealthAgency::where('id', $healthAgency->id)->first()
+        $isUpdate = HealthAgency::where('id', $healthAgency->id)
             ->update([
                 'name' => $request->name,
                 'address' => $request->address,
