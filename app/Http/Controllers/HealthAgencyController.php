@@ -154,17 +154,19 @@ class HealthAgencyController extends Controller
         //Checking File
         $uploadFile = $request->file('image');
         if ($uploadFile != null) {
-            File::delete(storage_path('app/') . $healthAgency->image);
+            File::delete(storage_path('app/public/img/health_agencies/') . $healthAgency->image);
             $path = $uploadFile->store('public/img/health_agencies');
+            $fileName = explode('/', $path);
+            $fileName = end($fileName);
         } else {
-            $path = $healthAgency->image;
+            $fileName = $healthAgency->image;
         }
 
         $isUpdate = HealthAgency::where('id', $healthAgency->id)
             ->update([
                 'name' => $request->name,
                 'address' => $request->address,
-                'image' => $path,
+                'image' => $fileName,
                 'call_center' => $request->call_center,
                 'email' => $request->email,
             ]);
