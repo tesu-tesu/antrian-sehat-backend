@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Validator;
 
 class PolyMasterController extends Controller
 {
-    public function __construct() {
+    public function __construct()
+    {
         $this->middleware('roleUser:Super Admin')->only(['store', 'update', 'destroy']);
     }
     /**
@@ -23,7 +24,7 @@ class PolyMasterController extends Controller
     public function index()
     {
         $polymasters = PolyMaster::paginate(8);
-        if($polymasters)
+        if ($polymasters)
             return response()->json([
                 'success' => true,
                 'message' => 'Get data success',
@@ -114,7 +115,7 @@ class PolyMasterController extends Controller
             return response()->json($validator->errors()->toJson(), 400);
         }
 
-        $isUpdate = PolyMaster::where('id', $polyMaster->id)->first()
+        $isUpdate = PolyMaster::where('id', $polyMaster->id)
             ->update([
                 'name' => $request->name
             ]);
@@ -160,7 +161,7 @@ class PolyMasterController extends Controller
     {
         $polyName = PolyMaster::where('id', $polyclinic->poly_master_id)->first();
 
-        if($polyName)
+        if ($polyName)
             return response()->json([
                 'success' => true,
                 'message' => 'Get data successfully!',
@@ -173,9 +174,10 @@ class PolyMasterController extends Controller
             ]);
     }
 
-	public function getAllPolyMaster(){
-	    $polymasters = PolyMaster::all();
-        if($polymasters)
+    public function getAllPolyMaster()
+    {
+        $polymasters = PolyMaster::all();
+        if ($polymasters)
             return response()->json([
                 'success' => true,
                 'message' => 'Get data success',
@@ -186,5 +188,5 @@ class PolyMasterController extends Controller
                 'success' => false,
                 'message' => 'Get data failed',
             ], 200);
-	}
+    }
 }

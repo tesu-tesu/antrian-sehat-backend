@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class PolyMaster extends Model
 {
     protected $fillable = [
-        'name',
+        'name','image'
     ];
 
     public function polyclinics() {
