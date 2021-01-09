@@ -212,7 +212,14 @@ class HealthAgencyController extends Controller
 
     public function search(Request $request)
     {
-        $search = $request->q;
+        $validator = Validator::make($request->all(), [
+            'search' => 'string',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+        $search = $request->search;
+
         $results = [];
         if ($search != null) {
             $query1 = HealthAgency::where('name', 'like', '%' . $search . '%')->get();
