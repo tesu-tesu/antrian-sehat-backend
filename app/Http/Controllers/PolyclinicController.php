@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Validator;
 
 class PolyclinicController extends Controller
 {
-    public function __construct() {
+    public function __construct()
+    {
         $this->middleware('roleUser:Admin')->only(['store', 'update', 'destroy']);
     }
     /**
@@ -48,7 +49,7 @@ class PolyclinicController extends Controller
             'health_agency_id' => 'required|numeric',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
 
@@ -57,7 +58,7 @@ class PolyclinicController extends Controller
             'health_agency_id' => $request->health_agency_id,
         ]);
 
-        if($polyclinic)
+        if ($polyclinic)
             return response()->json([
                 'success' => true,
                 'message' => 'Add data successfully!',
@@ -106,7 +107,7 @@ class PolyclinicController extends Controller
             'health_agency_id' => 'required|numeric',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
 
@@ -118,7 +119,7 @@ class PolyclinicController extends Controller
 
         $newPolyclinic = Polyclinic::where('id', $polyclinic->id)->first();
 
-        if($isUpdate)
+        if ($isUpdate)
             return response()->json([
                 'success' => true,
                 'message' => 'Update data successfully!',
@@ -151,5 +152,29 @@ class PolyclinicController extends Controller
                 'message' => 'Delete data failed!',
             ], 200);
         }
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->q;
+        $results = null;
+        if ($search != null) {
+            $query1 = HealthAgency::where('name', 'like', '%' . $search . '%')->get();
+            $query2 = PolyMaster::where('name', 'like', '%' . $search . '%')
+                ->with('polyclinics', 'polyclinics.health_agency')->get();
+
+            foreach ($query1 as $item) {
+                $results[] = $item;
+            }
+            foreach ($query2 as $polymaster) {
+                foreach ($polymaster->polyclinics as $polyclinic) {
+                    if (!in_array($polyclinic->health_agency, $results)) {
+                        $results[] = $polyclinic->health_agency;
+                    }
+                }
+            }
+        }
+
+        return response()->json($results, 200);
     }
 }
