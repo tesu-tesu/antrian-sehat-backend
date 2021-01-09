@@ -43,7 +43,7 @@ Route::group(['middleware' => ['auth:api']], function () {
         //        Route::get('show-schedule/{polyclinic}', 'ScheduleController@getScheduleOfPolyclinic')
         //            ->name('user.show-schedule-from-polyclinic');
 
-        Route::post('search', 'PolyclinicController@search')
+        Route::post('search', 'HealthAgencyController@search')
             ->name('user.search');
         Route::get('get-current-waiting-list', 'WaitingListController@getCurrentWaitingListRegist')
             ->name('user.get-waiting-list-by-schedule');
