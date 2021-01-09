@@ -227,18 +227,20 @@ class HealthAgencyController extends Controller
                 ->with('polyclinics', 'polyclinics.health_agency')->get();
 
             foreach ($query1 as $item) {
-                $results[] = $item;
+                $results['name'][] = $item;
             }
             foreach ($query2 as $polymaster) {
                 foreach ($polymaster->polyclinics as $polyclinic) {
                     if (!in_array($polyclinic->health_agency, $results)) {
-                        $results[] = $polyclinic->health_agency;
+                        $results['contains'][] = $polyclinic->health_agency;
                     }
                 }
             }
         }
 
-        return response()->json($results, 200);
+        $data = $results;
+
+        return response()->json($data, 200);
     }
 
     public function getHAOfPolymaster(PolyMaster $polymaster)
