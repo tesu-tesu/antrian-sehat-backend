@@ -15,79 +15,78 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(['middleware' => ['auth:api']], function () {
+    //Authentication
     Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
         Route::post('logout', 'AuthController@logout')->name('logout');
         Route::post('refresh', 'AuthController@refresh')->name('refresh');
     });
 
     //User
-    Route::group(['prefix' => 'user'], function () {
+    Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
         Route::post('change-password/{user}', 'UserController@changePassword')
-            ->name('user.change-password');
+            ->name('change-password');
         Route::post('change-image/{user}', 'UserController@changeImage')
-            ->name('user.change-image');
-
-        //userRole : Pasien
-        Route::get('polymaster/{polyclinic}/', 'PolyMasterController@getPolymasterOfPolyclinic')
-            ->name('user.get-polymaster');
-        Route::get('health-agency/{polymaster}/', 'HealthAgencyController@getHAOfPolymaster')
-            ->name('user.show-health-agency');
-        Route::get('get-waiting-list', 'WaitingListController@getWaitingList')
-            ->name('user.get-waiting-list');
-        Route::get('get-waiting-list/{schedule}/{date}', 'WaitingListController@getCurrentWaitingListRegist')
-            ->name('user.get-waiting-list-regist');
-        Route::get('show-nearest-waiting-list', 'WaitingListController@showNearestWaitingList')
-            ->name('user.show-nearest-waiting-list');
-        Route::get('show-schedule/{polymaster}', 'ScheduleController@getScheduleOfPolymaster')
-            ->name('user.show-schedule-from-polymaster');
-        //        Route::get('show-schedule/{polyclinic}', 'ScheduleController@getScheduleOfPolyclinic')
-        //            ->name('user.show-schedule-from-polyclinic');
-
-        Route::post('health-agency/search', 'HealthAgencyController@search')
-            ->name('user.search.health-agency');
-        Route::get('get-current-waiting-list', 'WaitingListController@getCurrentWaitingListRegist')
-            ->name('user.get-waiting-list-by-schedule');
-        Route::get('get-residence-number/', 'UserController@getResidenceNumber')
-            ->name('user.get-residence-number');
-        Route::get('get-booked-residence-number', 'UserController@getBookedResidenceNumber')
-            ->name('user.get-booked-residence-number');
+            ->name('change-image');
+        Route::get('current-user', 'UserController@getSelf')
+            ->name('get-current-user');
+        Route::get('residence-number', 'UserController@getResidenceNumber')
+            ->name('get-residence-number');
+        Route::get('booked-residence-number', 'UserController@getBookedResidenceNumber')
+            ->name('get-booked-residence-number');
+        Route::get('role-admin', 'UserController@getRoleAdmin')
+            ->name('get-role-admin');
     });
-
-    //userRole : Admin
-    Route::group(['prefix' => 'admin'], function () {
-        Route::group(['prefix' => 'health-agency', 'as' => 'health-agency.'], function () {
-            Route::get('{healthAgency}/polyclinic', 'ScheduleController@getSchedulePolyclinicOfHA')
-                ->name('show-polyclinic');
-            Route::get('admin-waiting-list', 'WaitingListController@getAdminWaitingList')
-                ->name('show-waiting-list');
-            Route::post('change-status/{waiting_list}/{status}', 'WaitingListController@changeStatus')
-                ->name('change-status');
-            Route::post('check-patient-qrcode/{qr_code}', 'WaitingListController@checkPatientQRCode')
-                ->name('check-patient-qrcode');
-            Route::get('/all', 'HealthAgencyController@getAllHealthAgency')
-                ->name('all-health-agency');
-        });
-        Route::group(['prefix' => 'poly-master', 'as' => 'poly-master.'], function () {
-            Route::get('/all', 'PolyMasterController@getAllPolyMaster')
-                ->name('all-poly-master');
-        });
-
-        Route::resource('health-agency', 'HealthAgencyController');
-        Route::resource('poly-master', 'PolyMasterController');
-        Route::resource('schedule', 'ScheduleController');
-        Route::resource('polyclinic', 'PolyclinicController');
-        Route::resource('waiting-list', 'WaitingListController');
-
-        Route::get('get-admin-user', 'UserController@getAdminUser')
-            ->name('admin.get-admin-user');
-    });
-
-    Route::get('user/get-current-user', 'UserController@getSelf')
-        ->name('user.get-current-user');
-
     Route::resource('user', 'UserController');
+
+    //Poly Master
+    Route::group(['prefix' => 'poly-master', 'as' => 'poly-master.'], function () {
+        Route::get('of-poly/{polyclinic}', 'PolyMasterController@getPolymasterOfPolyclinic')
+            ->name('get-polymaster-of-polyclinic');
+        Route::get('all', 'PolyMasterController@getAllPolyMaster')
+            ->name('get-all-poly-master');
+    });
+    Route::resource('poly-master', 'PolyMasterController');
+
+    //Health Agency
+    Route::group(['prefix' => 'health-agency', 'as' => 'health-agency.'], function () {
+        Route::get('of-poly/{polymaster}', 'HealthAgencyController@getHAOfPolymaster')
+            ->name('get-ha-of-polymaster');
+        Route::post('search', 'HealthAgencyController@search')
+            ->name('search');
+        Route::get('all', 'HealthAgencyController@getAllHealthAgency')
+            ->name('get-all-health-agency');
+    });
+    Route::resource('health-agency', 'HealthAgencyController');
+
+    //Waiting List
+    Route::group(['prefix' => 'waiting-list', 'as' => 'waiting-list.'], function () {
+        Route::get('current-regist/{schedule}/{date}', 'WaitingListController@getCurrentRegist')
+            ->name('get-current-regist');
+        Route::get('nearest', 'WaitingListController@getNearest')
+            ->name('get-nearest');
+        Route::get('admin-menu', 'WaitingListController@getAdminMenu')
+            ->name('get-admin-menu');
+        Route::post('change-status/{waiting_list}/{status}', 'WaitingListController@changeStatus')
+            ->name('change-status');
+        Route::post('check-patient-qrcode/{qr_code}', 'WaitingListController@checkPatientQRCode')
+            ->name('check-patient-qrcode');
+    });
+    Route::resource('waiting-list', 'WaitingListController');
+
+    //Schedule
+    Route::group(['prefix' => 'schedule', 'as' => 'schedule.'], function () {
+        Route::get('of-poly/{polymaster}', 'ScheduleController@getScheduleOfPolymaster')
+            ->name('get-schedule-of-polymaster');
+        Route::get('of-ha/{healthAgency}', 'ScheduleController@getSchedulePolyclinicOfHA')
+            ->name('get-schedule-of-ha');
+    });
+    Route::resource('schedule', 'ScheduleController');
+
+    //Polyclinic
+    Route::resource('polyclinic', 'PolyclinicController');
 });
 
+//Authentication
 Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
     Route::post('register', 'AuthController@register')->name('register');
     Route::post('login', 'AuthController@login')->name('login');

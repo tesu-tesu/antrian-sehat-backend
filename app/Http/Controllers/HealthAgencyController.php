@@ -16,7 +16,7 @@ class HealthAgencyController extends Controller
     public function __construct()
     {
         $this->middleware('roleUser:Super Admin')->only(['store']);
-        $this->middleware('roleUser:Admin,Super Admin')->only(['update', 'destroy']);
+        $this->middleware('roleUser:Admin|Super Admin')->only(['update', 'destroy']);
     }
     /**
      * Display a listing of the resource.

@@ -17,16 +17,48 @@ class WaitingListController extends Controller
     {
         $this->middleware('roleUser:Admin')->only(['getAdminWaitingList', 'changeStatus', 'checkPatientQRCode']);
         $this->middleware('roleUser:Pasien')->only(['store']);
-        $this->middleware('roleUser:Admin,Pasien')->only(['update', 'destroy']);
+        $this->middleware('roleUser:Admin|Pasien')->only(['update', 'destroy']);
     }
+
     /**
      * Display a listing of the resource.
-     *
+     * @notes : mengambil data semua antrian yang dimiliki pasien (yang lalu, hari ini, atau hari berikutnya)
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        //
+        $userId = Auth::id();
+        date_default_timezone_set('Asia/Jakarta');
+
+        $currentWaitingList = DB::table('waiting_list_view')
+            ->where('user_id', $userId)
+            ->where('registered_date', date('Y-m-d'))
+            ->where('status', 'Belum Diperiksa')
+            ->get();
+
+        $futureWaitingList = DB::table('waiting_list_view')
+            ->where('user_id', $userId)
+            ->where('registered_date', '>', date('Y-m-d'))
+            ->where('status', 'Belum Diperiksa')
+            ->get();
+
+        $historyWaitingList = DB::table('waiting_list_view')
+            ->where('user_id', $userId)
+            ->where('registered_date', '<=', date('Y-m-d'))
+            ->where(function ($q) {
+                $q->where('status', 'Dibatalkan')
+                    ->orWhere('status', 'Sudah Diperiksa');
+            })
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'waitingList' => [
+                'currentWaitingList' => $currentWaitingList,
+                'futureWaitingList' => $futureWaitingList,
+                'historyWaitingList' => $historyWaitingList,
+            ],
+        ], 200);
     }
 
     /**
@@ -203,48 +235,9 @@ class WaitingListController extends Controller
     }
 
     /**
-     * @notes : mengambil data semua antrian yang dimiliki pasien (yang lalu, hari ini, atau hari berikutnya)
-     */
-    public function getWaitingList()
-    {
-        $userId = Auth::id();
-        date_default_timezone_set('Asia/Jakarta');
-
-        $currentWaitingList = DB::table('waiting_list_view')
-            ->where('user_id', $userId)
-            ->where('registered_date', date('Y-m-d'))
-            ->where('status', 'Belum Diperiksa')
-            ->get();
-
-        $futureWaitingList = DB::table('waiting_list_view')
-            ->where('user_id', $userId)
-            ->where('registered_date', '>', date('Y-m-d'))
-            ->where('status', 'Belum Diperiksa')
-            ->get();
-
-        $historyWaitingList = DB::table('waiting_list_view')
-            ->where('user_id', $userId)
-            ->where('registered_date', '<=', date('Y-m-d'))
-            ->where(function ($q) {
-                $q->where('status', 'Dibatalkan')
-                    ->orWhere('status', 'Sudah Diperiksa');
-            })
-            ->get();
-
-        return response()->json([
-            'success' => true,
-            'waitingList' => [
-                'currentWaitingList' => $currentWaitingList,
-                'futureWaitingList' => $futureWaitingList,
-                'historyWaitingList' => $historyWaitingList,
-            ],
-        ], 200);
-    }
-
-    /**
      * @notes : mengambil antrian terdekat dari antrian yang dimiliki pasien (ditampilkan di home)
      */
-    public function showNearestWaitingList()
+    public function getNearest()
     {
         $userId = Auth::id();
 
@@ -273,7 +266,7 @@ class WaitingListController extends Controller
     /**
      * @notes : mengambil data jumlah antrian saat ini untuk poli terkait pada tanggal terkait
      */
-    public function getCurrentWaitingListRegist($scheduleId, $date)
+    public function getCurrentRegist($scheduleId, $date)
     {
         $message = $this->validateScheduleDate($scheduleId, $date);
         if ($message != "")
@@ -342,7 +335,7 @@ class WaitingListController extends Controller
         return "";
     }
 
-    public function getAdminWaitingList()
+    public function getAdminMenu()
     {
         $waiting_list = DB::table('waiting_list_view')
             ->select(

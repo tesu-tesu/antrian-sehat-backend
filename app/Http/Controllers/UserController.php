@@ -19,7 +19,7 @@ class UserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('roleUser:Admin,Super Admin')->only(['show']);
+        $this->middleware('roleUser:Admin|Super Admin')->only(['show']);
         $this->middleware('roleUser:Super Admin')->only(['getAdminUser']);
     }
     /**
@@ -52,7 +52,7 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function getAdminUser()
+    public function getRoleAdmin()
     {
         $admins = User::where('role', "Admin")->with('health_agency')->get();
 
@@ -259,7 +259,7 @@ class UserController extends Controller
 
     private function getImagePath($filename) {
         $path = storage_path('app/public/img/users/'. $filename);
-        
+
         if (!File::exists($path)) {
             abort(404);
         }
