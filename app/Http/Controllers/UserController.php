@@ -32,7 +32,7 @@ class UserController extends Controller
         //
     }
 
-    public function getSelf()
+    public function getCurrent()
     {
         if (auth()->user()->role == 'Admin') // atau  FacadesAuth::id()
             $user = User::with('health_agency')->find(auth()->user()->id);
