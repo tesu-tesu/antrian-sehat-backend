@@ -27,8 +27,8 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('change-password');
         Route::post('change-image/{user}', 'UserController@changeImage')
             ->name('change-image');
-        Route::get('current-user', 'UserController@getSelf')
-            ->name('get-current-user');
+        Route::get('current', 'UserController@getCurrent')
+            ->name('get-current');
         Route::get('residence-number', 'UserController@getResidenceNumber')
             ->name('get-residence-number');
         Route::get('booked-residence-number', 'UserController@getBookedResidenceNumber')
@@ -64,6 +64,12 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('get-current-regist');
         Route::get('nearest', 'WaitingListController@getNearest')
             ->name('get-nearest');
+        Route::get('today', 'WaitingListController@getToday')
+            ->name('get-today');
+        Route::get('past', 'WaitingListController@getPast')
+            ->name('get-past');
+        Route::get('future', 'WaitingListController@getFuture')
+            ->name('get-future');
         Route::get('admin-menu', 'WaitingListController@getAdminMenu')
             ->name('get-admin-menu');
         Route::post('change-status/{waiting_list}/{status}', 'WaitingListController@changeStatus')

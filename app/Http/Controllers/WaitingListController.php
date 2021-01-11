@@ -16,7 +16,7 @@ class WaitingListController extends Controller
     public function __construct()
     {
         $this->middleware('roleUser:Admin')->only(['getAdminWaitingList', 'changeStatus', 'checkPatientQRCode']);
-        $this->middleware('roleUser:Pasien')->only(['store']);
+        $this->middleware('roleUser:Pasien')->only(['store', 'getToday', 'getPast', 'getFuture']);
         $this->middleware('roleUser:Admin|Pasien')->only(['update', 'destroy']);
     }
 
@@ -231,6 +231,66 @@ class WaitingListController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Delete data failed!'
+            ], 200);
+    }
+
+    /**
+     * @notes : mengambil data semua antrian yang dimiliki pasien (yang lalu, hari ini, atau hari berikutnya)
+     */
+    public function getCurrent()
+    {
+        $userId = Auth::id();
+        date_default_timezone_set('Asia/Jakarta');
+
+        $data = DB::table('waiting_list_view')
+            ->where('user_id', $userId)
+            ->where('registered_date', date('Y-m-d'))
+            ->where('status', 'Belum Diperiksa')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Berhasil mendapatkan antrian hari ini',
+            'data' => $data,
+        ], 200);
+    }
+
+    public function getFuture() 
+    {
+        $userId = Auth::id();
+        date_default_timezone_set('Asia/Jakarta');
+
+        $data = DB::table('waiting_list_view')
+            ->where('user_id', $userId)
+            ->where('registered_date', '>', date('Y-m-d'))
+            ->where('status', 'Belum Diperiksa')
+            ->get();
+        
+        return response()->json([
+                'success' => true,
+                'message' => 'Berhasil mendapatkan antrian di kemudian hari',
+                'data' => $data,
+            ], 200);
+    }
+
+    public function getPast() 
+    {
+        $userId = Auth::id();
+        date_default_timezone_set('Asia/Jakarta');
+
+        $data = DB::table('waiting_list_view')
+            ->where('user_id', $userId)
+            ->where('registered_date', '<=', date('Y-m-d'))
+            ->where(function ($q) {
+                $q->where('status', 'Dibatalkan')
+                    ->orWhere('status', 'Sudah Diperiksa');
+            })
+            ->get();
+
+        return response()->json([
+                'success' => true,
+                'message' => 'Berhasil mendapatkan antrian yang telah usai',
+                'data' => $data,
             ], 200);
     }
 
