@@ -237,7 +237,7 @@ class WaitingListController extends Controller
     /**
      * @notes : mengambil data semua antrian yang dimiliki pasien (yang lalu, hari ini, atau hari berikutnya)
      */
-    public function getCurrent()
+    public function getToday()
     {
         $userId = Auth::id();
         date_default_timezone_set('Asia/Jakarta');
@@ -255,7 +255,7 @@ class WaitingListController extends Controller
         ], 200);
     }
 
-    public function getFuture() 
+    public function getFuture()
     {
         $userId = Auth::id();
         date_default_timezone_set('Asia/Jakarta');
@@ -265,15 +265,15 @@ class WaitingListController extends Controller
             ->where('registered_date', '>', date('Y-m-d'))
             ->where('status', 'Belum Diperiksa')
             ->get();
-        
+
         return response()->json([
-                'success' => true,
-                'message' => 'Berhasil mendapatkan antrian di kemudian hari',
-                'data' => $data,
-            ], 200);
+            'success' => true,
+            'message' => 'Berhasil mendapatkan antrian di kemudian hari',
+            'data' => $data,
+        ], 200);
     }
 
-    public function getPast() 
+    public function getPast()
     {
         $userId = Auth::id();
         date_default_timezone_set('Asia/Jakarta');
@@ -288,10 +288,10 @@ class WaitingListController extends Controller
             ->get();
 
         return response()->json([
-                'success' => true,
-                'message' => 'Berhasil mendapatkan antrian yang telah usai',
-                'data' => $data,
-            ], 200);
+            'success' => true,
+            'message' => 'Berhasil mendapatkan antrian yang telah usai',
+            'data' => $data,
+        ], 200);
     }
 
     /**
