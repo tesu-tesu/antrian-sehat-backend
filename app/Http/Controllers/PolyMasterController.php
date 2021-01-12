@@ -34,7 +34,7 @@ class PolyMasterController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Get data failed',
-            ], 200);
+            ], 404);
     }
 
     /**
@@ -60,7 +60,7 @@ class PolyMasterController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
+            return response()->json($validator->errors()->toJson(), 422);
         }
         $poly_master = PolyMaster::create([
             'name' => $request->name,
@@ -73,7 +73,7 @@ class PolyMasterController extends Controller
         ], 200) : response()->json([
             'success' => false,
             'message' => 'Add data failed!',
-        ], 200);
+        ], 500);
     }
 
     /**
@@ -112,7 +112,7 @@ class PolyMasterController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
+            return response()->json($validator->errors()->toJson(), 422);
         }
 
         $isUpdate = PolyMaster::where('id', $polyMaster->id)
@@ -133,7 +133,7 @@ class PolyMasterController extends Controller
                 'success' => false,
                 'message' => 'Update data failed!',
                 'data' => $poly_master,
-            ], 200);
+            ], 500);
     }
 
     /**
@@ -153,7 +153,7 @@ class PolyMasterController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Delete data failed!',
-            ], 200);
+            ], 500);
         }
     }
 
@@ -166,12 +166,12 @@ class PolyMasterController extends Controller
                 'success' => true,
                 'message' => 'Get data successfully!',
                 'data' => $polyName
-            ]);
+            ], 200);
         else
             return response()->json([
                 'success' => false,
                 'message' => 'Get data failed!',
-            ]);
+            ], 404);
     }
 
     public function getAllPolyMaster()
@@ -187,6 +187,6 @@ class PolyMasterController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Get data failed',
-            ], 200);
+            ], 404);
     }
 }

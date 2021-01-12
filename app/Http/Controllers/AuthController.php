@@ -83,7 +83,7 @@ class AuthController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'User failed registered',
-            ], 200);
+            ], 500);
         }
     }
 

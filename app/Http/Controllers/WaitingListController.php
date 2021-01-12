@@ -86,7 +86,7 @@ class WaitingListController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
         //validate date and schedule
         $schedule = Schedule::where('id', $request->schedule)->first();
@@ -99,7 +99,7 @@ class WaitingListController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 404);
 
         $ordered = WaitingList::select('id')
             ->where('residence_number', $request->residence_number)
@@ -111,7 +111,7 @@ class WaitingListController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => "Anda sudah mendaftar di jadwal ini dengan NIK yang sama",
-            ], 400);
+            ], 401);
 
         $latestOrder = WaitingList::select('order_number')
             ->where('registered_date', $request->registered_date)
@@ -151,7 +151,7 @@ class WaitingListController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Add data failed!',
-            ], 400);
+            ], 500);
     }
 
     /**
@@ -190,7 +190,7 @@ class WaitingListController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $updated = WaitingList::where('id', $waitingList->id)
@@ -211,7 +211,7 @@ class WaitingListController extends Controller
                 'success' => false,
                 'message' => 'Update data failed!',
                 'data' => $waiting_list,
-            ], 200);
+            ], 500);
     }
 
     /**
@@ -231,7 +231,7 @@ class WaitingListController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Delete data failed!'
-            ], 200);
+            ], 500);
     }
 
     /**
@@ -248,11 +248,17 @@ class WaitingListController extends Controller
             ->where('status', 'Belum Diperiksa')
             ->get();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Berhasil mendapatkan antrian hari ini',
-            'data' => $data,
-        ], 200);
+        if($data)
+            return response()->json([
+                'success' => true,
+                'message' => 'Berhasil mendapatkan antrian hari ini',
+                'data' => $data,
+            ], 200);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mendapatkan antrian hari ini',
+            ], 404);
     }
 
     public function getFuture()
@@ -266,11 +272,17 @@ class WaitingListController extends Controller
             ->where('status', 'Belum Diperiksa')
             ->get();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Berhasil mendapatkan antrian di kemudian hari',
-            'data' => $data,
-        ], 200);
+        if($data)
+            return response()->json([
+                'success' => true,
+                'message' => 'Berhasil mendapatkan antrian di kemudian hari ini',
+                'data' => $data,
+            ], 200);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mendapatkan antrian di kemudian hari ini',
+            ], 404);
     }
 
     public function getPast()
@@ -287,11 +299,17 @@ class WaitingListController extends Controller
             })
             ->get();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Berhasil mendapatkan antrian yang telah usai',
-            'data' => $data,
-        ], 200);
+        if($data)
+            return response()->json([
+                'success' => true,
+                'message' => 'Berhasil mendapatkan antrian yang telah usai',
+                'data' => $data,
+            ], 200);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mendapatkan antrian yang telah usai',
+            ], 404);
     }
 
     /**
@@ -320,7 +338,7 @@ class WaitingListController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => "You don\'t have any nearest waiting list",
-            ], 200);
+            ], 404);
     }
 
     /**
@@ -333,7 +351,7 @@ class WaitingListController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 422);
 
         $schedule = Schedule::find($scheduleId);
 
@@ -354,11 +372,17 @@ class WaitingListController extends Controller
             $currentWaitingList->registered_date = $date;
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => "Get the current and latest number in specific schedule and date",
-            'data' => $currentWaitingList,
-        ], 200);
+        if($currentWaitingList)
+            return response()->json([
+                'success' => true,
+                'message' => "Get the current and latest number in specific schedule and date",
+                'data' => $currentWaitingList,
+            ], 200);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => "Failed Get the current and latest number in specific schedule and date",
+            ], 404);
     }
 
     /**
@@ -424,7 +448,7 @@ class WaitingListController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => "Waiting list is empty",
-            ], 200);
+            ], 404);
         }
     }
 
@@ -451,7 +475,7 @@ class WaitingListController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => "Antrian gagal di proses",
-            ], 200);
+            ], 500);
     }
 
     public function checkPatientQRCode($qr_code)
@@ -471,6 +495,6 @@ class WaitingListController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => "Antrian telah di terima sebelumnya",
-            ], 200);
+            ], 500);
     }
 }

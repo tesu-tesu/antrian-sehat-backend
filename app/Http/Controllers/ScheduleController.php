@@ -51,7 +51,7 @@ class ScheduleController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
+            return response()->json($validator->errors()->toJson(), 422);
         }
 
         $schedule = Schedule::create([
@@ -71,7 +71,7 @@ class ScheduleController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Add data failed!',
-            ], 200);
+            ], 500);
     }
 
     /**
@@ -113,7 +113,7 @@ class ScheduleController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
+            return response()->json($validator->errors()->toJson(), 422);
         }
 
         $isUpdate = Schedule::where('id', $schedule->id)
@@ -137,7 +137,7 @@ class ScheduleController extends Controller
                 'success' => false,
                 'message' => 'Update data failed!',
                 'data' => $newSchedule,
-            ], 200);
+            ], 500);
         }
     }
 
@@ -158,7 +158,7 @@ class ScheduleController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Delete data failed!'
-            ], 200);
+            ], 500);
         }
     }
 
@@ -201,7 +201,7 @@ class ScheduleController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Data not found',
-            ], 200);
+            ], 404);
         }
     }
 
@@ -217,12 +217,12 @@ class ScheduleController extends Controller
                 'success' => true,
                 'message' => 'Get data successfully!',
                 'data' => $schedule
-            ]);
+            ], 200);
         else
             return response()->json([
                 'success' => false,
                 'message' => 'Get data failed!',
-            ]);
+            ], 404);
     }
 
     //    public function getScheduleOfPolyclinic(Polyclinic $polyclinic){

@@ -45,11 +45,17 @@ class UserController extends Controller
         }
         $user->imagePath = $this->getImagePath($user->profile_img);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Data user selected',
-            'data' => $user
-        ], 200);
+        if($user)
+            return response()->json([
+                'success' => true,
+                'message' => 'Data user selected',
+                'data' => $user
+            ], 200);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => 'Get data user failed',
+            ], 404);
     }
 
     public function getRoleAdmin()
@@ -91,7 +97,7 @@ class UserController extends Controller
             'health_agency' => 'nullable|numeric'
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $user = User::create([
@@ -115,7 +121,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'User has failed created',
-            ], 200);
+            ], 500);
     }
 
     /**
@@ -136,7 +142,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Data has failed to be selected',
-            ], 200);
+            ], 404);
     }
 
     /**
@@ -166,7 +172,7 @@ class UserController extends Controller
             'health_agency' => 'nullable|numeric'
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $updated = User::where('id', $user->id)
@@ -191,7 +197,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'User data can not be updated'
-            ], 400);
+            ], 500);
     }
 
     public function changePassword(Request $request, User $user)
@@ -202,7 +208,7 @@ class UserController extends Controller
             'confirm' => ['same:new'],
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $updated = User::where('id', $user->id)
@@ -219,7 +225,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Password data can not be updated'
-            ], 400);
+            ], 500);
     }
 
     public function changeImage(Request $request, User $user)
@@ -228,7 +234,7 @@ class UserController extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg|max:2000',
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $uploadFile = $request->file('image');
@@ -254,7 +260,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Profile image can not be updated'
-            ], 400);
+            ], 500);
     }
 
     private function getImagePath($filename) {
@@ -284,7 +290,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'User can not be deleted'
-            ], 400);
+            ], 500);
         }
     }
 
@@ -303,7 +309,7 @@ class UserController extends Controller
                 'success' => false,
                 'message' => 'User doesn\'t have residence number',
                 'data' => 0,
-            ], 200);
+            ], 404);
         }
     }
 
@@ -329,7 +335,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Anda belum pernah mendaftar',
-            ], 400);
+            ], 404);
         }
     }
 }

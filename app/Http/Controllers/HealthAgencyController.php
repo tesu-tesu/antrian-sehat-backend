@@ -36,7 +36,7 @@ class HealthAgencyController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Get data failed!',
-            ], 200);
+            ], 404);
     }
 
     /**
@@ -66,7 +66,7 @@ class HealthAgencyController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         //Checking File
@@ -95,7 +95,7 @@ class HealthAgencyController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Add data failed!',
-            ], 200);
+            ], 500);
     }
 
     /**
@@ -116,7 +116,7 @@ class HealthAgencyController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Data has failed to be selected',
-            ], 200);
+            ], 404);
     }
 
     /**
@@ -184,7 +184,7 @@ class HealthAgencyController extends Controller
                 'success' => false,
                 'message' => 'Update data failed!',
                 'data' => $health_agency,
-            ], 200);
+            ], 500);
     }
 
     /**
@@ -206,7 +206,7 @@ class HealthAgencyController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Delete data failed!',
-            ], 200);
+            ], 500);
         }
     }
 
@@ -240,7 +240,7 @@ class HealthAgencyController extends Controller
 
         $data = $results;
 
-        return response()->json($data, 200);
+        return response()->json($data, 404);
     }
 
     public function getHAOfPolymaster(PolyMaster $polymaster)
@@ -258,12 +258,12 @@ class HealthAgencyController extends Controller
                 'success' => true,
                 'message' => 'Get dat successfully!',
                 'data' => $results
-            ]);
+            ], 200);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'Get dat failed!',
-            ]);
+            ], 404);
         }
     }
 
@@ -280,6 +280,6 @@ class HealthAgencyController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Get data failed',
-            ], 200);
+            ], 404);
     }
 }

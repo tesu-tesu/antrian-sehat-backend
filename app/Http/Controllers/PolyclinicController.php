@@ -50,7 +50,7 @@ class PolyclinicController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $polyclinic = Polyclinic::create([
@@ -68,7 +68,7 @@ class PolyclinicController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Add data failed!',
-            ], 200);
+            ], 500);
     }
 
     /**
@@ -108,7 +108,7 @@ class PolyclinicController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $isUpdate = Polyclinic::where('id', $polyclinic->id)->first()
@@ -130,7 +130,7 @@ class PolyclinicController extends Controller
                 'success' => false,
                 'message' => 'Update data failed!',
                 'data' => $newPolyclinic,
-            ], 200);
+            ], 500);
     }
 
     /**
@@ -150,7 +150,7 @@ class PolyclinicController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Delete data failed!',
-            ], 200);
+            ], 500);
         }
     }
 }
