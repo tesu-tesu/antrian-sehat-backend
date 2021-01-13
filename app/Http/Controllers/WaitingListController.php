@@ -15,7 +15,7 @@ class WaitingListController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('roleUser:Admin')->only(['getAdminWaitingList', 'changeStatus', 'checkPatientQRCode']);
+        $this->middleware('roleUser:Admin')->only(['getAdminMenu', 'changeStatus', 'checkPatientQRCode']);
         $this->middleware('roleUser:Pasien')->only(['store', 'getToday', 'getPast', 'getFuture']);
         $this->middleware('roleUser:Admin|Pasien')->only(['update', 'destroy']);
     }
@@ -248,7 +248,7 @@ class WaitingListController extends Controller
             ->where('status', 'Belum Diperiksa')
             ->get();
 
-        if($data)
+        if ($data)
             return response()->json([
                 'success' => true,
                 'message' => 'Berhasil mendapatkan antrian hari ini',
@@ -272,7 +272,7 @@ class WaitingListController extends Controller
             ->where('status', 'Belum Diperiksa')
             ->get();
 
-        if($data)
+        if ($data)
             return response()->json([
                 'success' => true,
                 'message' => 'Berhasil mendapatkan antrian di kemudian hari ini',
@@ -299,7 +299,7 @@ class WaitingListController extends Controller
             })
             ->get();
 
-        if($data)
+        if ($data)
             return response()->json([
                 'success' => true,
                 'message' => 'Berhasil mendapatkan antrian yang telah usai',
@@ -372,7 +372,7 @@ class WaitingListController extends Controller
             $currentWaitingList->registered_date = $date;
         }
 
-        if($currentWaitingList)
+        if ($currentWaitingList)
             return response()->json([
                 'success' => true,
                 'message' => "Get the current and latest number in specific schedule and date",
