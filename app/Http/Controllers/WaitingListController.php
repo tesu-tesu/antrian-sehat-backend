@@ -248,7 +248,7 @@ class WaitingListController extends Controller
             ->where('status', 'Belum Diperiksa')
             ->get();
 
-        if($data)
+        if(!$data->isEmpty())
             return response()->json([
                 'success' => true,
                 'message' => 'Berhasil mendapatkan antrian hari ini',
@@ -272,7 +272,7 @@ class WaitingListController extends Controller
             ->where('status', 'Belum Diperiksa')
             ->get();
 
-        if($data)
+        if(!$data->isEmpty())
             return response()->json([
                 'success' => true,
                 'message' => 'Berhasil mendapatkan antrian di kemudian hari ini',
@@ -299,7 +299,7 @@ class WaitingListController extends Controller
             })
             ->get();
 
-        if($data)
+        if(!$data->isEmpty())
             return response()->json([
                 'success' => true,
                 'message' => 'Berhasil mendapatkan antrian yang telah usai',
@@ -338,7 +338,7 @@ class WaitingListController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => "You don\'t have any nearest waiting list",
-            ], 404);
+            ], 200);
     }
 
     /**

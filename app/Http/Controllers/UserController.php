@@ -43,7 +43,9 @@ class UserController extends Controller
         } else {
             $user = User::find(auth()->user()->id);
         }
-        $user->imagePath = $this->getImagePath($user->profile_img);
+        
+        if($user->profile_img)
+            $user->imagePath = $this->getImagePath($user->profile_img);
 
         if($user)
             return response()->json([
