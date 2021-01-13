@@ -27,7 +27,7 @@ class HealthAgencyController extends Controller
     {
         $healthAgencies = HealthAgency::paginate(8);
 
-        if(!$healthAgencies->isEmpty())
+        if ($healthAgencies)
             return response()->json([
                 'success' => true,
                 'message' => 'Get data successfully!',
@@ -245,7 +245,7 @@ class HealthAgencyController extends Controller
             $results[] = $row->health_agency;
         }
 
-        if(!$data->isEmpty())
+        if ($data)
             return response()->json([
                 'success' => true,
                 'message' => 'Get dat successfully!',
@@ -259,7 +259,7 @@ class HealthAgencyController extends Controller
     {
         $healthAgency = HealthAgency::all();
 
-        if(!$healthAgency->isEmpty())
+        if ($healthAgency)
             return response()->json([
                 'success' => true,
                 'message' => 'Get data success',

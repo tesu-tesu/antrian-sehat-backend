@@ -25,7 +25,7 @@ class PolyMasterController extends Controller
     {
         $polymasters = PolyMaster::paginate(8);
 
-        if(!$polymasters->isEmpty())
+        if ($polymasters)
             return response()->json([
                 'success' => true,
                 'message' => 'Get data success',
@@ -159,7 +159,7 @@ class PolyMasterController extends Controller
     {
         $polyName = PolyMaster::where('id', $polyclinic->poly_master_id)->first();
 
-        if(!$polyName->isEmpty())
+        if ($polyName)
             return response()->json([
                 'success' => true,
                 'message' => 'Get data successfully!',
@@ -173,7 +173,7 @@ class PolyMasterController extends Controller
     {
         $polymasters = PolyMaster::all();
 
-        if(!$polymasters->isEmpty())
+        if ($polymasters)
             return response()->json([
                 'success' => true,
                 'message' => 'Get data success',
