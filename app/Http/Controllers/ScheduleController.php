@@ -198,10 +198,7 @@ class ScheduleController extends Controller
                 'data' => $schedules,
             ], 200);
         } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Data not found',
-            ], 404);
+            abort(404);
         }
     }
 
@@ -212,32 +209,13 @@ class ScheduleController extends Controller
         }, 'schedules'])
             ->where('poly_master_id', $polymaster->id)->get();
 
-        if ($schedule)
+        if(!$schedule->isEmpty())
             return response()->json([
                 'success' => true,
                 'message' => 'Get data successfully!',
                 'data' => $schedule
             ], 200);
         else
-            return response()->json([
-                'success' => false,
-                'message' => 'Get data failed!',
-            ], 404);
+            abort(404);
     }
-
-    //    public function getScheduleOfPolyclinic(Polyclinic $polyclinic){
-    //        $schedules = Schedule::where('polyclinic_id', $polyclinic->id)->get();
-    //
-    //        if($schedules)
-    //            return response()->json([
-    //                'success' => true,
-    //                'message' => 'Get data successfully!',
-    //                'data' => $schedules
-    //            ]);
-    //        else
-    //            return response()->json([
-    //                'success' => false,
-    //                'message' => 'Get data failed!',
-    //            ]);
-    //    }
 }

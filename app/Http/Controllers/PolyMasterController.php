@@ -24,17 +24,15 @@ class PolyMasterController extends Controller
     public function index()
     {
         $polymasters = PolyMaster::paginate(8);
-        if ($polymasters)
+
+        if(!$polymasters->isEmpty())
             return response()->json([
                 'success' => true,
                 'message' => 'Get data success',
                 'data' => $polymasters,
             ], 200);
         else
-            return response()->json([
-                'success' => false,
-                'message' => 'Get data failed',
-            ], 404);
+            abort(404);
     }
 
     /**
@@ -66,7 +64,7 @@ class PolyMasterController extends Controller
             'name' => $request->name,
         ]);
 
-        return $poly_master ? \response()->json([
+        return $poly_master ? response()->json([
             'success' => true,
             'message' => 'Add data successfully!',
             'data' => $poly_master,
@@ -161,32 +159,27 @@ class PolyMasterController extends Controller
     {
         $polyName = PolyMaster::where('id', $polyclinic->poly_master_id)->first();
 
-        if ($polyName)
+        if(!$polyName->isEmpty())
             return response()->json([
                 'success' => true,
                 'message' => 'Get data successfully!',
                 'data' => $polyName
             ], 200);
         else
-            return response()->json([
-                'success' => false,
-                'message' => 'Get data failed!',
-            ], 404);
+            abort(404);
     }
 
     public function getAllPolyMaster()
     {
         $polymasters = PolyMaster::all();
-        if ($polymasters)
+
+        if(!$polymasters->isEmpty())
             return response()->json([
                 'success' => true,
                 'message' => 'Get data success',
                 'data' => $polymasters,
             ], 200);
         else
-            return response()->json([
-                'success' => false,
-                'message' => 'Get data failed',
-            ], 404);
+            abort(404);
     }
 }

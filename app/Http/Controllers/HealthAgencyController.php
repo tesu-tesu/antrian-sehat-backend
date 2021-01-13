@@ -26,17 +26,15 @@ class HealthAgencyController extends Controller
     public function index()
     {
         $healthAgencies = HealthAgency::paginate(8);
-        if ($healthAgencies)
+
+        if(!$healthAgencies->isEmpty())
             return response()->json([
                 'success' => true,
                 'message' => 'Get data successfully!',
                 'data' => $healthAgencies,
             ], 200);
         else
-            return response()->json([
-                'success' => false,
-                'message' => 'Get data failed!',
-            ], 404);
+            abort(404);
     }
 
     /**
@@ -106,17 +104,11 @@ class HealthAgencyController extends Controller
      */
     public function show(HealthAgency $healthAgency)
     {
-        if ($healthAgency)
-            return response()->json([
-                'success' => true,
-                'message' => 'Data is selected',
-                'data' => $healthAgency
-            ], 200);
-        else
-            return response()->json([
-                'success' => true,
-                'message' => 'Data has failed to be selected',
-            ], 404);
+        return response()->json([
+            'success' => true,
+            'message' => 'Data is selected',
+            'data' => $healthAgency
+        ], 200);
     }
 
     /**
@@ -240,7 +232,7 @@ class HealthAgencyController extends Controller
 
         $data = $results;
 
-        return response()->json($data, 404);
+        return response()->json($data, 200);
     }
 
     public function getHAOfPolymaster(PolyMaster $polymaster)
@@ -253,33 +245,27 @@ class HealthAgencyController extends Controller
             $results[] = $row->health_agency;
         }
 
-        if ($data) {
+        if(!$data->isEmpty())
             return response()->json([
                 'success' => true,
                 'message' => 'Get dat successfully!',
                 'data' => $results
             ], 200);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Get dat failed!',
-            ], 404);
-        }
+        else
+            abort(404);
     }
 
     public function getAllHealthAgency()
     {
         $healthAgency = HealthAgency::all();
-        if ($healthAgency)
+
+        if(!$healthAgency->isEmpty())
             return response()->json([
                 'success' => true,
                 'message' => 'Get data success',
                 'data' => $healthAgency,
             ], 200);
         else
-            return response()->json([
-                'success' => false,
-                'message' => 'Get data failed',
-            ], 404);
+            abort(404);
     }
 }

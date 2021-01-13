@@ -15,7 +15,7 @@ class WaitingListController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('roleUser:Admin')->only(['getAdminWaitingList', 'changeStatus', 'checkPatientQRCode']);
+        $this->middleware('roleUser:Admin')->only(['getAdminMenu', 'changeStatus', 'checkPatientQRCode']);
         $this->middleware('roleUser:Pasien')->only(['store', 'getToday', 'getPast', 'getFuture']);
         $this->middleware('roleUser:Admin|Pasien')->only(['update', 'destroy']);
     }
@@ -255,10 +255,7 @@ class WaitingListController extends Controller
                 'data' => $data,
             ], 200);
         else
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal mendapatkan antrian hari ini',
-            ], 404);
+            abort(404);
     }
 
     public function getFuture()
@@ -279,10 +276,7 @@ class WaitingListController extends Controller
                 'data' => $data,
             ], 200);
         else
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal mendapatkan antrian di kemudian hari ini',
-            ], 404);
+            abort(404);
     }
 
     public function getPast()
@@ -306,10 +300,7 @@ class WaitingListController extends Controller
                 'data' => $data,
             ], 200);
         else
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal mendapatkan antrian yang telah usai',
-            ], 404);
+            abort(404);
     }
 
     /**
@@ -328,17 +319,14 @@ class WaitingListController extends Controller
                     ->orWhere('status', 'Sedang Diperiksa');
             })->first();
 
-        if ($waitingList)
+        if (!$waitingList->isEmpty())
             return response()->json([
                 'success' => true,
                 'message' => "Successfully get nearest waiting list",
                 'data' => $waitingList,
             ], 200);
         else
-            return response()->json([
-                'success' => false,
-                'message' => "You don\'t have any nearest waiting list",
-            ], 200);
+            abort(404);
     }
 
     /**
@@ -372,17 +360,14 @@ class WaitingListController extends Controller
             $currentWaitingList->registered_date = $date;
         }
 
-        if($currentWaitingList)
+        if (!$currentWaitingList->isEmpty())
             return response()->json([
                 'success' => true,
                 'message' => "Get the current and latest number in specific schedule and date",
                 'data' => $currentWaitingList,
             ], 200);
         else
-            return response()->json([
-                'success' => false,
-                'message' => "Failed Get the current and latest number in specific schedule and date",
-            ], 404);
+            abort(404);
     }
 
     /**
@@ -438,18 +423,14 @@ class WaitingListController extends Controller
             $list->user_name = User::where('id', $list->user_name)->first()->name;
         }
 
-        if ($waiting_list) {
+        if (!$waiting_list->isEmpty())
             return response()->json([
                 'success' => true,
                 'message' => "Successfully get waiting list of health agency",
                 'data' => $waiting_list,
             ], 200);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => "Waiting list is empty",
-            ], 404);
-        }
+        else
+            abort(404);
     }
 
     public function changeStatus(WaitingList $waiting_list, $status)

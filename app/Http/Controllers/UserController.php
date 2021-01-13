@@ -43,32 +43,32 @@ class UserController extends Controller
         } else {
             $user = User::find(auth()->user()->id);
         }
-        
+
         if($user->profile_img)
             $user->imagePath = $this->getImagePath($user->profile_img);
 
-        if($user)
+        if(!$user->isEmpty())
             return response()->json([
                 'success' => true,
                 'message' => 'Data user selected',
                 'data' => $user
             ], 200);
         else
-            return response()->json([
-                'success' => false,
-                'message' => 'Get data user failed',
-            ], 404);
+            abort(404);
     }
 
     public function getRoleAdmin()
     {
         $admins = User::where('role', "Admin")->with('health_agency')->get();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Data user admin selected',
-            'data' => $admins
-        ], 200);
+        if(!$admins->isEmpty())
+            return response()->json([
+                'success' => true,
+                'message' => 'Data user admin selected',
+                'data' => $admins
+            ], 200);
+        else
+            abort(404);
     }
 
     /**
@@ -112,17 +112,17 @@ class UserController extends Controller
             'password' => bcrypt($request->password)
         ]);
 
-        $user = User::where('id', $user->id)->with('health_agency')->first();
-        if ($user)
+        if($user)
             return response()->json([
                 'success' => true,
-                'message' => 'User has successfully created',
+                'message' => 'User was successfully created',
                 'data' => $user
             ], 200);
         else
             return response()->json([
-                'success' => true,
-                'message' => 'User has failed created',
+                'success' => false,
+                'message' => 'User was failed created',
+                'data' => $user
             ], 500);
     }
 
@@ -134,17 +134,12 @@ class UserController extends Controller
     public function show(User $user)
     {
         $user = User::where('id', $user->id)->with('health_agency')->first();
-        if ($user)
-            return response()->json([
-                'success' => true,
-                'message' => 'Data is selected',
-                'data' => $user
-            ], 200);
-        else
-            return response()->json([
-                'success' => true,
-                'message' => 'Data has failed to be selected',
-            ], 404);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data is selected',
+            'data' => $user
+        ], 200);
     }
 
     /**
@@ -300,19 +295,14 @@ class UserController extends Controller
     {
         $user = FacadesAuth::user()->residence_number;
 
-        if ($user != null) {
+        if(!$user->isEmpty())
             return response()->json([
                 'success' => true,
                 'message' => 'Success get the residence number',
                 'data' => $user,
             ], 200);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'User doesn\'t have residence number',
-                'data' => 0,
-            ], 404);
-        }
+        else
+            abort(404);
     }
 
     public function getBookedResidenceNumber()
@@ -327,17 +317,13 @@ class UserController extends Controller
             array_push($residenceNumberArray, $item->residence_number);
         }
 
-        if ($residenceNumbers != null) {
+        if(!$residenceNumbers->isEmpty())
             return response()->json([
                 'success' => true,
                 'message' => 'Berhasil mendapat NIK yang pernah didaftar',
                 'data' => $residenceNumberArray,
             ], 200);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Anda belum pernah mendaftar',
-            ], 404);
-        }
+        else
+            abort(404);
     }
 }
