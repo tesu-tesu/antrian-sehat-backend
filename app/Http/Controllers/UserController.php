@@ -44,10 +44,10 @@ class UserController extends Controller
             $user = User::find(auth()->user()->id);
         }
 
-        if($user->profile_img)
+        if ($user->profile_img)
             $user->imagePath = $this->getImagePath($user->profile_img);
 
-        if(!$user->isEmpty())
+        if ($user)
             return response()->json([
                 'success' => true,
                 'message' => 'Data user selected',
@@ -61,7 +61,7 @@ class UserController extends Controller
     {
         $admins = User::where('role', "Admin")->with('health_agency')->get();
 
-        if(!$admins->isEmpty())
+        if ($admins)
             return response()->json([
                 'success' => true,
                 'message' => 'Data user admin selected',
@@ -112,7 +112,7 @@ class UserController extends Controller
             'password' => bcrypt($request->password)
         ]);
 
-        if($user)
+        if ($user)
             return response()->json([
                 'success' => true,
                 'message' => 'User was successfully created',
@@ -260,13 +260,14 @@ class UserController extends Controller
             ], 500);
     }
 
-    private function getImagePath($filename) {
-        $path = storage_path('app/public/img/users/'. $filename);
+    private function getImagePath($filename)
+    {
+        $path = storage_path('app/public/img/users/' . $filename);
 
         if (!File::exists($path)) {
             abort(404);
         }
-        $stringPath = Storage::url('public/img/users/'.$filename);
+        $stringPath = Storage::url('public/img/users/' . $filename);
 
         return $stringPath;
     }
@@ -295,7 +296,7 @@ class UserController extends Controller
     {
         $user = FacadesAuth::user()->residence_number;
 
-        if(!$user->isEmpty())
+        if ($user)
             return response()->json([
                 'success' => true,
                 'message' => 'Success get the residence number',
@@ -317,7 +318,7 @@ class UserController extends Controller
             array_push($residenceNumberArray, $item->residence_number);
         }
 
-        if(!$residenceNumbers->isEmpty())
+        if ($residenceNumbers)
             return response()->json([
                 'success' => true,
                 'message' => 'Berhasil mendapat NIK yang pernah didaftar',

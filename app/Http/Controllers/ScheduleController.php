@@ -209,7 +209,7 @@ class ScheduleController extends Controller
         }, 'schedules'])
             ->where('poly_master_id', $polymaster->id)->get();
 
-        if(!$schedule->isEmpty())
+        if ($schedule)
             return response()->json([
                 'success' => true,
                 'message' => 'Get data successfully!',

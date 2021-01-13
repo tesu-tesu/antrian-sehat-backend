@@ -248,7 +248,7 @@ class WaitingListController extends Controller
             ->where('status', 'Belum Diperiksa')
             ->get();
 
-        if(!$data->isEmpty())
+        if ($data)
             return response()->json([
                 'success' => true,
                 'message' => 'Berhasil mendapatkan antrian hari ini',
@@ -269,7 +269,7 @@ class WaitingListController extends Controller
             ->where('status', 'Belum Diperiksa')
             ->get();
 
-        if(!$data->isEmpty())
+        if ($data)
             return response()->json([
                 'success' => true,
                 'message' => 'Berhasil mendapatkan antrian di kemudian hari ini',
@@ -293,7 +293,7 @@ class WaitingListController extends Controller
             })
             ->get();
 
-        if(!$data->isEmpty())
+        if ($data)
             return response()->json([
                 'success' => true,
                 'message' => 'Berhasil mendapatkan antrian yang telah usai',
@@ -319,7 +319,7 @@ class WaitingListController extends Controller
                     ->orWhere('status', 'Sedang Diperiksa');
             })->first();
 
-        if (!$waitingList->isEmpty())
+        if ($waitingList)
             return response()->json([
                 'success' => true,
                 'message' => "Successfully get nearest waiting list",
@@ -360,7 +360,7 @@ class WaitingListController extends Controller
             $currentWaitingList->registered_date = $date;
         }
 
-        if (!$currentWaitingList->isEmpty())
+        if ($currentWaitingList)
             return response()->json([
                 'success' => true,
                 'message' => "Get the current and latest number in specific schedule and date",
@@ -423,7 +423,7 @@ class WaitingListController extends Controller
             $list->user_name = User::where('id', $list->user_name)->first()->name;
         }
 
-        if (!$waiting_list->isEmpty())
+        if ($waiting_list)
             return response()->json([
                 'success' => true,
                 'message' => "Successfully get waiting list of health agency",
