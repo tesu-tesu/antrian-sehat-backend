@@ -202,7 +202,7 @@ class HealthAgencyController extends Controller
         }
     }
 
-    public function search(Request $request)
+    public function searchName(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'search' => 'string',
@@ -212,20 +212,34 @@ class HealthAgencyController extends Controller
         }
         $search = $request->search;
 
-        $results = [];
+        $results = null;
         if ($search != null) {
-            $results['name']  = HealthAgency::where('name', 'like', '%' . $search . '%')->simplePaginate(5);
+            $results  = HealthAgency::where('name', 'like', '%' . $search . '%')->paginate(5);
+        }
 
-            $results['contains'] = HealthAgency::whereHas('polyclinics', function ($q) use ($search) {
+        return response()->json($results, 200);
+    }
+
+    public function searchPolyContains(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'search' => 'string',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+        $search = $request->search;
+
+        $results = null;
+        if ($search != null) {
+            $results = HealthAgency::whereHas('polyclinics', function ($q) use ($search) {
                 $q->whereHas('poly_master', function ($q) use ($search) {
                     $q->where('name', 'like', '%' . $search . '%');
                 });
-            })->simplePaginate(5);
+            })->paginate(5);
         }
 
-        $data = $results;
-
-        return response()->json($data, 200);
+        return response()->json($results, 200);
     }
 
     public function getHAOfPolymaster(PolyMaster $polymaster)

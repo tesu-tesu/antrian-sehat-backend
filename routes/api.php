@@ -51,8 +51,10 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::group(['prefix' => 'health-agency', 'as' => 'health-agency.'], function () {
         Route::get('of-poly/{polymaster}', 'HealthAgencyController@getHAOfPolymaster')
             ->name('get-ha-of-polymaster');
-        Route::post('search', 'HealthAgencyController@search')
-            ->name('search');
+        Route::post('search-name', 'HealthAgencyController@searchName')
+            ->name('search-name');
+        Route::post('search-poly-contains', 'HealthAgencyController@searchPolyContains')
+            ->name('search-poly-contains');
         Route::get('all', 'HealthAgencyController@getAllHealthAgency')
             ->name('get-all-health-agency');
     });
