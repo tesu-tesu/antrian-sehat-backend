@@ -326,7 +326,10 @@ class WaitingListController extends Controller
                 'data' => $waitingList,
             ], 200);
         else
-            abort(404);
+            return response()->json([
+                'success' => false,
+                'message' => "Successfully get nearest waiting list",
+            ], 204);
     }
 
     /**
