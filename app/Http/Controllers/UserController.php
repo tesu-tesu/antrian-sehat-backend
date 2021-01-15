@@ -166,7 +166,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:3,150',
             'email' => 'required|string|email|unique:users,email,' . $user->id . '|max:100',
-            'phone' => 'required|numeric|digits_between:8,13',
+            'phone' => 'required|min:8|max:14',
             'role' => 'required|string',
             'residence_number' => 'nullable|numeric|unique:users,residence_number,' . $user->id . '|digits:16',
             'health_agency' => 'nullable|numeric'
