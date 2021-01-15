@@ -143,7 +143,7 @@ class HealthAgencyController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         //Checking File
@@ -211,7 +211,7 @@ class HealthAgencyController extends Controller
             'search' => 'string',
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
         $search = $request->search;
 
@@ -229,7 +229,7 @@ class HealthAgencyController extends Controller
             'search' => 'string',
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
         $search = $request->search;
 

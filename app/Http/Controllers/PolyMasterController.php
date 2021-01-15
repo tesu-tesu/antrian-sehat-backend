@@ -8,6 +8,7 @@ use App\Polyclinic;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
 class PolyMasterController extends Controller
@@ -58,13 +59,23 @@ class PolyMasterController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
+            'image' => 'image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 422);
         }
+        //Checking File
+        $uploadFile = $request->file('image');
+        if ($uploadFile) {
+            $path = $uploadFile->store('public/img/health_agencies');
+        } else {
+            $path = null;
+        }
+
         $poly_master = PolyMaster::create([
             'name' => $request->name,
+            'image' => $path,
         ]);
 
         return $poly_master ? response()->json([
@@ -110,15 +121,28 @@ class PolyMasterController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
+            'image' => 'image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 422);
         }
 
+        //Checking File
+        $uploadFile = $request->file('image');
+        if ($uploadFile != null) {
+            File::delete(storage_path('app/public/img/polymasters/') . $polyMaster->image);
+            $path = $uploadFile->store('public/img/polymasters');
+            $fileName = explode('/', $path);
+            $fileName = end($fileName);
+        } else {
+            $fileName = $polyMaster->image;
+        }
+
         $isUpdate = PolyMaster::where('id', $polyMaster->id)
             ->update([
-                'name' => $request->name
+                'name' => $request->name,
+                'image' => $fileName
             ]);
 
         $poly_master = PolyMaster::where('id', $polyMaster->id)->first();
