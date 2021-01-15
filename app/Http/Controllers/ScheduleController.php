@@ -198,7 +198,10 @@ class ScheduleController extends Controller
                 'data' => $schedules,
             ], 200);
         } else {
-            abort(404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Data is empty!',
+            ], 204);
         }
     }
 

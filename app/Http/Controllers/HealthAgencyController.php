@@ -34,7 +34,10 @@ class HealthAgencyController extends Controller
                 'data' => $healthAgencies,
             ], 200);
         else
-            abort(404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Data is empty!',
+            ], 200);
     }
 
     /**
@@ -255,11 +258,14 @@ class HealthAgencyController extends Controller
         if ($data)
             return response()->json([
                 'success' => true,
-                'message' => 'Get dat successfully!',
+                'message' => 'Get data successfully!',
                 'data' => $results
             ], 200);
         else
-            abort(404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Data is empty!',
+            ], 200);
     }
 
     public function getAllHealthAgency()
@@ -273,6 +279,9 @@ class HealthAgencyController extends Controller
                 'data' => $healthAgency,
             ], 200);
         else
-            abort(404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Data is empty!',
+            ], 200);
     }
 }

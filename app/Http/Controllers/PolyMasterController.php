@@ -32,7 +32,10 @@ class PolyMasterController extends Controller
                 'data' => $polymasters,
             ], 200);
         else
-            abort(404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Data is empty!',
+            ], 200);
     }
 
     /**
@@ -166,7 +169,10 @@ class PolyMasterController extends Controller
                 'data' => $polyName
             ], 200);
         else
-            abort(404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Data is empty!',
+            ], 200);
     }
 
     public function getAllPolyMaster()
@@ -180,6 +186,9 @@ class PolyMasterController extends Controller
                 'data' => $polymasters,
             ], 200);
         else
-            abort(404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Data is empty!',
+            ], 200);
     }
 }

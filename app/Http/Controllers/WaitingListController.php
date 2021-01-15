@@ -99,7 +99,7 @@ class WaitingListController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $message,
-            ], 404);
+            ], 200);
 
         $ordered = WaitingList::select('id')
             ->where('residence_number', $request->residence_number)
@@ -255,7 +255,10 @@ class WaitingListController extends Controller
                 'data' => $data,
             ], 200);
         else
-            abort(404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Data is empty!',
+            ], 200);
     }
 
     public function getFuture()
@@ -276,7 +279,10 @@ class WaitingListController extends Controller
                 'data' => $data,
             ], 200);
         else
-            abort(404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Data is empty!',
+            ], 200);
     }
 
     public function getPast()
@@ -300,7 +306,10 @@ class WaitingListController extends Controller
                 'data' => $data,
             ], 200);
         else
-            abort(404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Data is empty!',
+            ], 200);
     }
 
     /**
@@ -328,8 +337,8 @@ class WaitingListController extends Controller
         else
             return response()->json([
                 'success' => false,
-                'message' => "Successfully get nearest waiting list",
-            ], 204);
+                'message' => 'Data is empty!',
+            ], 200);
     }
 
     /**
@@ -370,7 +379,10 @@ class WaitingListController extends Controller
                 'data' => $currentWaitingList,
             ], 200);
         else
-            abort(404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Data is empty!',
+            ], 200);
     }
 
     /**
@@ -433,7 +445,10 @@ class WaitingListController extends Controller
                 'data' => $waiting_list,
             ], 200);
         else
-            abort(404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Data is empty!',
+            ], 200);
     }
 
     public function changeStatus(WaitingList $waiting_list, $status)

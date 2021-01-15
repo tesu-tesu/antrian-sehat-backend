@@ -68,7 +68,10 @@ class UserController extends Controller
                 'data' => $admins
             ], 200);
         else
-            abort(404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Data is empty!',
+            ], 200);
     }
 
     /**
@@ -265,7 +268,10 @@ class UserController extends Controller
         $path = storage_path('app/public/img/users/' . $filename);
 
         if (!File::exists($path)) {
-            abort(404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Data is empty!',
+            ], 200);
         }
         $stringPath = Storage::url('public/img/users/' . $filename);
 
@@ -303,7 +309,10 @@ class UserController extends Controller
                 'data' => $user,
             ], 200);
         else
-            abort(404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Data is empty!',
+            ], 200);
     }
 
     public function getBookedResidenceNumber()
@@ -325,6 +334,9 @@ class UserController extends Controller
                 'data' => $residenceNumberArray,
             ], 200);
         else
-            abort(404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Data is empty!',
+            ], 200);
     }
 }
