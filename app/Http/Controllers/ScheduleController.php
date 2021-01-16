@@ -208,7 +208,7 @@ class ScheduleController extends Controller
     public function getScheduleOfPolymaster(PolyMaster $polymaster)
     {
         $schedule = Polyclinic::with(['health_agency' => function ($q) {
-            $q->select('id', 'name')->get();
+            $q->select('id', 'name', 'image')->get();
         }, 'schedules'])
             ->where('poly_master_id', $polymaster->id)->get();
 
