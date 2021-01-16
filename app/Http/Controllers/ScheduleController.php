@@ -167,7 +167,7 @@ class ScheduleController extends Controller
         $listDay = ['M', 'S', 'S', 'R', 'K', 'J', 'S'];
         $schedules = Polyclinic::with(
             'health_agency:id,name,address',
-            'poly_master:id,name',
+            'poly_master:id,name,image',
             'schedules'
         )->where('health_agency_id', $healthAgency)->get();
 
@@ -208,7 +208,7 @@ class ScheduleController extends Controller
     public function getScheduleOfPolymaster(PolyMaster $polymaster)
     {
         $schedule = Polyclinic::with(['health_agency' => function ($q) {
-            $q->select('id', 'name', 'image')->get();
+            $q->select('id', 'name')->get();
         }, 'schedules'])
             ->where('poly_master_id', $polymaster->id)->get();
 
