@@ -137,7 +137,7 @@ class PolyclinicController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \App\Polyclinic  $polyclinic
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Polyclinic $polyclinic)
     {
